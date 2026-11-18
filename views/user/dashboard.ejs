@@ -1,0 +1,171 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Ringkasan aktivitas belajar kamu di Kelompok 4.' }) %>
+
+  <section class="welcome-banner">
+    <div class="welcome-orb" aria-hidden="true"></div>
+    <div class="welcome-copy">
+      <p class="eyebrow eyebrow-light"><%= greeting() %>,</p>
+      <h2 class="display-3"><%= user.name.split(' ')[0] %>. Siap lanjut belajar?</h2>
+      <p>Lihat jadwal terdekat, selesaikan tagihan, atau mulai program baru hari ini.</p>
+      <div class="welcome-actions">
+        <a class="btn btn-accent btn-sm" href="/program">Pesan sesi baru <%- icon('arrow-right') %></a>
+        <a class="btn btn-ghost-light btn-sm" href="/dashboard/jadwal">Lihat jadwal</a>
+      </div>
+    </div>
+    <div class="welcome-side">
+      <div class="welcome-metric">
+        <span>Sesi mendatang</span>
+        <strong><%= upcomingCount %></strong>
+      </div>
+      <div class="welcome-metric">
+        <span>Sesi selesai</span>
+        <strong><%= completedSessions %></strong>
+      </div>
+    </div>
+  </section>
+
+  <div class="stat-grid">
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-green"><%- icon('book') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Kelas aktif</span>
+        <strong><%= stats.active %></strong>
+        <span class="stat-meta">Program yang sedang berjalan</span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-amber"><%- icon('calendar') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Sesi mendatang</span>
+        <strong><%= upcomingCount %></strong>
+        <span class="stat-meta">Terjadwal dalam waktu dekat</span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-rose"><%- icon('wallet') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Total investasi</span>
+        <strong class="stat-value-sm"><%= formatRupiah(stats.spent) %></strong>
+        <span class="stat-meta">Dari <%= stats.total_orders %> pesanan</span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-sky"><%- icon('check-circle') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Sesi selesai</span>
+        <strong><%= completedSessions %></strong>
+        <span class="stat-meta">Terus tingkatkan progresmu</span>
+      </div>
+    </article>
+  </div>
+
+  <div class="dash-grid-2">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Jadwal terdekat</h2>
+          <p>Sesi yang menunggu kamu hadiri.</p>
+        </div>
+        <a class="text-link" href="/dashboard/jadwal">Semua jadwal <%- icon('arrow-right') %></a>
+      </div>
+
+      <% if (upcoming.length === 0) { %>
+        <div class="empty-inline">
+          <span class="empty-inline-icon"><%- icon('calendar') %></span>
+          <div><strong>Belum ada sesi mendatang</strong><p>Pesan program untuk mulai menjadwalkan sesi belajar.</p></div>
+          <a class="btn btn-outline btn-sm" href="/program">Lihat program</a>
+        </div>
+      <% } else { %>
+        <div class="session-list">
+          <% upcoming.forEach(function(session) { const parts = formatDateID(session.date, 'short').split(' '); %>
+            <div class="session-item">
+              <div class="date-block">
+                <strong><%= parts[0] %></strong>
+                <span><%= parts[1] %></span>
+              </div>
+              <div class="session-info">
+                <span class="tiny-label"><%= sessionLabel(session.date) %> · Sesi ke-<%= session.seq %></span>
+                <h3><%= session.program_title %></h3>
+                <p><%- icon('clock') %> <%= session.time_slot %> <span class="dot-sep">·</span> <%- icon(session.mode === 'hybrid' ? 'map-pin' : 'video') %> <%= modeLabel(session.mode) %></p>
+              </div>
+              <span class="avatar avatar-xs accent-sage"><%= initials(session.tutor_name || 'Tutor') %></span>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Perlu diselesaikan</h2>
+          <p>Tagihan yang menunggu pembayaran.</p>
+        </div>
+      </div>
+
+      <% if (pendingOrders.length === 0) { %>
+        <div class="empty-inline empty-inline-vertical">
+          <span class="empty-inline-icon"><%- icon('check-circle') %></span>
+          <div><strong>Tidak ada tagihan tertunda</strong><p>Semua pesanan kamu sudah dibayar.</p></div>
+        </div>
+      <% } else { %>
+        <div class="pending-list">
+          <% pendingOrders.forEach(function(order) { %>
+            <div class="pending-item">
+              <span class="pending-icon"><%- icon('receipt') %></span>
+              <div class="pending-info">
+                <strong><%= order.program_title %></strong>
+                <span><%= order.code %> · <%= formatRupiah(order.total) %></span>
+              </div>
+              <a class="btn btn-primary btn-xs" href="/dashboard/pesanan/<%= order.code %>">Bayar</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </section>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Pesanan terbaru</h2>
+        <p>Riwayat transaksi dan invoice kamu.</p>
+      </div>
+      <a class="text-link" href="/dashboard/pesanan">Lihat semua <%- icon('arrow-right') %></a>
+    </div>
+
+    <% if (recentOrders.length === 0) { %>
+      <div class="empty-inline">
+        <span class="empty-inline-icon"><%- icon('receipt') %></span>
+        <div><strong>Belum ada pesanan</strong><p>Program pertamamu menunggu untuk dimulai.</p></div>
+        <a class="btn btn-primary btn-sm" href="/program">Temukan program</a>
+      </div>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Pesanan</th><th>Program</th><th>Jadwal mulai</th><th>Total</th><th>Status</th><th class="th-right">Aksi</th></tr>
+          </thead>
+          <tbody>
+            <% recentOrders.forEach(function(order) { %>
+              <tr>
+                <td>
+                  <a class="cell-strong" href="/dashboard/pesanan/<%= order.code %>"><%= order.code %></a>
+                  <span class="cell-sub"><%= order.invoice_no %></span>
+                </td>
+                <td><span class="cell-strong"><%= order.program_title %></span><span class="cell-sub"><%= categoryBy(order.category).label %></span></td>
+                <td><%= formatDateID(order.start_date, 'short') %><span class="cell-sub"><%= order.time_slot %></span></td>
+                <td class="cell-strong"><%= formatRupiah(order.total) %></td>
+                <td><span class="badge badge-<%= statusMeta(order.status).tone %>"><%= statusMeta(order.status).label %></span></td>
+                <td class="td-right">
+                  <a class="icon-link" href="/dashboard/pesanan/<%= order.code %>" title="Lihat detail"><%- icon('arrow-up-right') %></a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+<%- include('../partials/dash-bottom') %>

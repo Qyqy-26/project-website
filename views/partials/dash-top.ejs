@@ -1,0 +1,69 @@
+<%- include('flash') %>
+<div class="dash-shell">
+  <aside class="dash-sidebar" data-sidebar>
+    <div class="side-brand-row">
+      <a class="brand brand-light" href="/" aria-label="Kelompok 4 — beranda">
+        <span class="brand-mark">4</span>
+        <span class="brand-word">Kelompok 4</span>
+      </a>
+      <button class="side-close" type="button" data-sidebar-close aria-label="Tutup menu"><%- icon('close') %></button>
+    </div>
+
+    <div class="side-profile">
+      <span class="avatar avatar-md avatar-<%= area === 'admin' ? 'amber' : 'forest' %>"><%= initials(user.name) %></span>
+      <div class="side-profile-text">
+        <strong><%= user.name %></strong>
+        <span><%= area === 'admin' ? 'Administrator' : 'Siswa Kelompok 4' %></span>
+      </div>
+    </div>
+
+    <nav class="side-nav" aria-label="Navigasi dashboard">
+      <% if (area === 'admin') { %>
+        <p class="side-label">Operasional</p>
+        <a class="side-link <%= active === 'dashboard' ? 'is-active' : '' %>" href="/admin"><%- icon('home') %><span>Dashboard</span></a>
+        <a class="side-link <%= active === 'orders' ? 'is-active' : '' %>" href="/admin/pesanan"><%- icon('receipt') %><span>Pesanan</span></a>
+        <a class="side-link <%= active === 'report' ? 'is-active' : '' %>" href="/admin/laporan"><%- icon('chart') %><span>Laporan Keuangan</span></a>
+        <p class="side-label">Katalog</p>
+        <a class="side-link <%= active === 'programs' ? 'is-active' : '' %>" href="/admin/program"><%- icon('book') %><span>Program</span></a>
+        <a class="side-link <%= active === 'tutors' ? 'is-active' : '' %>" href="/admin/tutor"><%- icon('graduation') %><span>Tutor</span></a>
+        <p class="side-label">Akun</p>
+        <a class="side-link <%= active === 'users' ? 'is-active' : '' %>" href="/admin/pengguna"><%- icon('users') %><span>Pengguna</span></a>
+      <% } else { %>
+        <p class="side-label">Menu utama</p>
+        <a class="side-link <%= active === 'overview' ? 'is-active' : '' %>" href="/dashboard"><%- icon('home') %><span>Ringkasan</span></a>
+        <a class="side-link <%= active === 'orders' ? 'is-active' : '' %>" href="/dashboard/pesanan"><%- icon('receipt') %><span>Pesanan Saya</span></a>
+        <a class="side-link <%= active === 'schedule' ? 'is-active' : '' %>" href="/dashboard/jadwal"><%- icon('calendar') %><span>Jadwal Belajar</span></a>
+        <a class="side-link <%= active === 'profile' ? 'is-active' : '' %>" href="/dashboard/profil"><%- icon('user') %><span>Profil Saya</span></a>
+        <p class="side-label">Jelajahi</p>
+        <a class="side-link" href="/program"><%- icon('grid') %><span>Katalog Program</span></a>
+        <a class="side-link" href="/tutor"><%- icon('users') %><span>Tutor Kami</span></a>
+      <% } %>
+    </nav>
+
+    <div class="side-foot">
+      <a class="side-foot-link" href="/"><%- icon('globe') %> Lihat situs</a>
+      <form action="/keluar" method="post"><button class="side-foot-link" type="submit"><%- icon('log-out') %> Keluar</button></form>
+      <p class="side-version">Kelompok 4 v1.0 · <%= currentYear %></p>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="dash-topbar">
+      <button class="icon-btn only-mobile" type="button" data-sidebar-open aria-label="Buka menu"><%- icon('menu') %></button>
+      <div class="dash-title">
+        <p><%= area === 'admin' ? 'Panel Admin' : 'Area Siswa' %></p>
+        <h1><%= title %></h1>
+        <% if (typeof subtitle !== 'undefined' && subtitle) { %><span class="dash-sub"><%= subtitle %></span><% } %>
+      </div>
+      <div class="dash-top-actions">
+        <span class="date-chip only-desktop"><%- icon('calendar') %> <%= formatDateID(new Date(), 'short') %></span>
+        <% if (area === 'admin') { %>
+          <a class="btn btn-outline btn-sm only-desktop" href="/admin/laporan"><%- icon('chart') %> Laporan</a>
+        <% } else { %>
+          <a class="btn btn-primary btn-sm only-desktop" href="/program">Pesan kelas</a>
+        <% } %>
+        <span class="avatar avatar-sm avatar-forest"><%= initials(user.name) %></span>
+      </div>
+    </header>
+
+    <main class="dash-content">

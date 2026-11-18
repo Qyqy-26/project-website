@@ -1,0 +1,77 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Kelola data diri dan keamanan akunmu.' }) %>
+
+  <div class="profile-layout">
+    <aside class="profile-card">
+      <span class="profile-avatar"><%= initials(user.name) %></span>
+      <h2><%= user.name %></h2>
+      <p><%= user.email %></p>
+      <span class="badge badge-green">Siswa Kelompok 4</span>
+      <div class="profile-stats">
+        <div><strong><%= stats.total_orders %></strong><span>Pesanan</span></div>
+        <div><strong><%= formatRupiah(stats.spent) %></strong><span>Total investasi</span></div>
+      </div>
+      <div class="profile-meta">
+        <span><%- icon('calendar') %> Bergabung <%= formatDateID(user.created_at, 'month-year') %></span>
+        <% if (user.phone) { %><span><%- icon('phone') %> <%= user.phone %></span><% } %>
+      </div>
+      <a class="btn btn-outline btn-block btn-sm" href="/program">Jelajahi program baru</a>
+    </aside>
+
+    <div class="profile-forms">
+      <section class="panel">
+        <div class="panel-head">
+          <div><h2>Informasi pribadi</h2><p>Pastikan data ini selalu terbaru.</p></div>
+        </div>
+        <form method="post" action="/dashboard/profil" class="form-grid">
+          <label class="field">
+            <span>Nama lengkap</span>
+            <input type="text" name="name" value="<%= user.name %>" required minlength="2" maxlength="80">
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input type="email" value="<%= user.email %>" disabled>
+            <small class="field-hint">Email tidak dapat diubah. Hubungi admin jika perlu diperbarui.</small>
+          </label>
+          <label class="field">
+            <span>Nomor WhatsApp</span>
+            <input type="tel" name="phone" value="<%= user.phone || '' %>" placeholder="0812 3456 7890">
+          </label>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Simpan perubahan</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div><h2>Ubah kata sandi</h2><p>Gunakan kata sandi yang kuat dan mudah kamu ingat.</p></div>
+          <span class="panel-icon"><%- icon('lock') %></span>
+        </div>
+        <form method="post" action="/dashboard/profil/password" class="form-grid">
+          <label class="field">
+            <span>Kata sandi saat ini</span>
+            <input type="password" name="current_password" required autocomplete="current-password">
+          </label>
+          <label class="field">
+            <span>Kata sandi baru</span>
+            <input type="password" name="new_password" required minlength="6" autocomplete="new-password">
+            <small class="field-hint">Minimal 6 karakter.</small>
+          </label>
+          <div class="form-actions">
+            <button class="btn btn-outline" type="submit">Perbarui kata sandi</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel panel-note-card">
+        <span class="stat-icon stat-icon-amber"><%- icon('shield') %></span>
+        <div>
+          <h3>Keamanan akun</h3>
+          <p>Jangan bagikan kata sandi kepada siapa pun, termasuk pihak yang mengaku dari Kelompok 4. Tim kami tidak pernah meminta kata sandi kamu.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<%- include('../partials/dash-bottom') %>

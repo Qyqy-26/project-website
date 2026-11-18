@@ -1,0 +1,66 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<%- include('../partials/flash') %>
+
+<main>
+  <section class="page-hero page-hero-tutors">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Beranda</a><span>/</span><span>Tutor</span>
+      </nav>
+      <div class="catalog-hero-grid">
+        <div>
+          <p class="eyebrow">Tutor kami</p>
+          <h1 class="display-2">Orang-orang yang membuat <em>perbedaan</em>.</h1>
+          <p class="page-lede">Bukan sekadar ahli di bidangnya. Tutor Kelompok 4 dipilih karena sabar, terstruktur, dan benar-benar peduli pada progres setiap siswa.</p>
+        </div>
+        <div class="catalog-hero-card catalog-hero-card-amber">
+          <span class="catalog-hero-number">4,9</span>
+          <span>rata-rata rating<br>dari seluruh tutor</span>
+          <span class="catalog-hero-foot"><%- icon('star') %> 400+ ulasan siswa</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="tutor-page-grid">
+        <% tutors.forEach(function(tutor) { %>
+          <article class="tutor-page-card">
+            <div class="tutor-page-head">
+              <span class="tutor-avatar tutor-avatar-xl accent-<%= tutor.accent %>"><%= initials(tutor.name) %></span>
+              <div class="tutor-page-id">
+                <h2><%= tutor.name %></h2>
+                <p><%= tutor.title %></p>
+                <% if (tutor.badge) { %><span class="tutor-badge"><%= tutor.badge %></span><% } %>
+              </div>
+            </div>
+            <p class="tutor-page-expertise"><%- icon('award') %> <%= tutor.expertise %></p>
+            <p class="tutor-page-bio"><%= tutor.bio %></p>
+            <div class="tutor-page-stats">
+              <div><strong><%= Number(tutor.rating).toFixed(1) %></strong><span>Rating</span></div>
+              <div><strong><%= formatNumber(tutor.students) %></strong><span>Siswa</span></div>
+              <div><strong><%= tutor.program_count %></strong><span>Program</span></div>
+            </div>
+            <a class="text-link" href="/program?q=<%= encodeURIComponent(tutor.name) %>">Lihat program <%- icon('arrow-right') %></a>
+          </article>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-help">
+    <div class="container catalog-help-inner">
+      <div>
+        <p class="eyebrow">Ingin tutor tertentu?</p>
+        <h2 class="display-3">Ceritakan kebutuhan belajarmu, kami bantu carikan tutor yang paling cocok.</h2>
+      </div>
+      <a class="btn btn-outline" href="mailto:<%= app.email %>?subject=Permintaan%20Tutor">Hubungi kami <%- icon('arrow-right') %></a>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

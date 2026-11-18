@@ -1,0 +1,91 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<%- include('../partials/flash') %>
+
+<main>
+  <section class="page-hero page-hero-catalog">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Beranda</a><span>/</span><span>Program</span>
+      </nav>
+      <div class="catalog-hero-grid">
+        <div>
+          <p class="eyebrow">Katalog program</p>
+          <h1 class="display-2">Temukan program yang <em>tepat</em> untukmu.</h1>
+          <p class="page-lede"><%= grandTotal %> program unggulan, lima bidang keahlian, satu tujuan: membuat belajar terasa masuk akal dan menyenangkan.</p>
+        </div>
+        <div class="catalog-hero-card">
+          <span class="catalog-hero-number"><%= grandTotal %></span>
+          <span>program aktif<br>siap dipesan</span>
+          <span class="catalog-hero-foot"><%- icon('shield') %> Tutor terverifikasi</span>
+        </div>
+      </div>
+
+      <form class="catalog-search" method="get" action="/program">
+        <% if (activeCategory !== 'all') { %><input type="hidden" name="kategori" value="<%= activeCategory %>"><% } %>
+        <% if (activeMode !== 'all') { %><input type="hidden" name="mode" value="<%= activeMode %>"><% } %>
+        <span class="search-icon"><%- icon('search') %></span>
+        <input type="search" name="q" value="<%= q %>" placeholder="Cari mata pelajaran, skill, atau nama tutor…" aria-label="Cari program">
+        <button class="btn btn-primary" type="submit">Cari program</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="filter-row">
+        <div class="chip-row" aria-label="Filter kategori">
+          <a class="chip <%= activeCategory === 'all' ? 'is-active' : '' %>" href="/program?mode=<%= activeMode %>&q=<%= encodeURIComponent(q) %>">
+            Semua <span><%= grandTotal %></span>
+          </a>
+          <% categories.forEach(function(cat) { %>
+            <a class="chip <%= activeCategory === cat.slug ? 'is-active' : '' %>" href="/program?kategori=<%= cat.slug %>&mode=<%= activeMode %>&q=<%= encodeURIComponent(q) %>">
+              <%= cat.label %> <span><%= categoryCount[cat.slug] || 0 %></span>
+            </a>
+          <% }); %>
+        </div>
+        <div class="segmented" aria-label="Filter mode belajar">
+          <a class="<%= activeMode === 'all' ? 'is-active' : '' %>" href="/program?kategori=<%= activeCategory %>&mode=all&q=<%= encodeURIComponent(q) %>">Semua</a>
+          <a class="<%= activeMode === 'online' ? 'is-active' : '' %>" href="/program?kategori=<%= activeCategory %>&mode=online&q=<%= encodeURIComponent(q) %>">Online</a>
+          <a class="<%= activeMode === 'hybrid' ? 'is-active' : '' %>" href="/program?kategori=<%= activeCategory %>&mode=hybrid&q=<%= encodeURIComponent(q) %>">Online & offline</a>
+        </div>
+      </div>
+
+      <div class="result-line">
+        <p><strong><%= programs.length %></strong> program ditemukan<% if (q) { %> untuk “<%= q %>”<% } %>.</p>
+        <% if (q || activeCategory !== 'all' || activeMode !== 'all') { %>
+          <a class="text-link" href="/program">Reset filter <%- icon('refresh') %></a>
+        <% } %>
+      </div>
+
+      <% if (programs.length === 0) { %>
+        <div class="empty-state">
+          <span class="empty-icon"><%- icon('search') %></span>
+          <h2>Belum ada program yang cocok</h2>
+          <p>Coba kata kunci lain atau lihat seluruh program yang tersedia.</p>
+          <a class="btn btn-primary" href="/program">Lihat semua program</a>
+        </div>
+      <% } else { %>
+        <div class="program-grid program-grid-4">
+          <% programs.forEach(function(program) { %>
+            <%- include('../partials/program-card', { program: program }) %>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="catalog-help">
+    <div class="container catalog-help-inner">
+      <div>
+        <p class="eyebrow">Butuh arahan?</p>
+        <h2 class="display-3">Tim kami bisa bantu memilih program yang paling sesuai.</h2>
+      </div>
+      <a class="btn btn-outline" href="mailto:<%= app.email %>?subject=Konsultasi%20Program">Konsultasi gratis <%- icon('arrow-right') %></a>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

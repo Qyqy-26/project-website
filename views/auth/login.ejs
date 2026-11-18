@@ -1,0 +1,71 @@
+<%- include('../partials/head') %>
+<div class="auth-shell">
+  <section class="auth-form-side">
+    <a class="brand" href="/" aria-label="Kelompok 4 — beranda">
+      <span class="brand-mark">4</span>
+      <span class="brand-word">Kelompok 4</span>
+    </a>
+
+    <div class="auth-form-wrap">
+      <p class="eyebrow">Selamat datang kembali</p>
+      <h1 class="display-3">Masuk ke akun <em>Kelompok 4</em>.</h1>
+      <p class="auth-lede">Lanjutkan belajar, cek jadwal, dan unduh invoice kapan saja.</p>
+
+      <form method="post" action="/masuk" class="auth-form">
+        <input type="hidden" name="next" value="<%= next %>">
+        <label class="field">
+          <span>Email</span>
+          <span class="input-icon">
+            <%- icon('mail') %>
+            <input type="email" name="email" value="<%= email %>" required autofocus autocomplete="email" placeholder="nama@email.com">
+          </span>
+        </label>
+        <label class="field">
+          <span>Kata sandi</span>
+          <span class="input-icon">
+            <%- icon('lock') %>
+            <input type="password" name="password" required autocomplete="current-password" placeholder="Masukkan kata sandi" data-password-input>
+            <button class="pw-toggle" type="button" data-password-toggle aria-label="Tampilkan kata sandi"><%- icon('eye') %></button>
+          </span>
+        </label>
+        <button class="btn btn-primary btn-block btn-lg" type="submit">Masuk <%- icon('arrow-right') %></button>
+      </form>
+
+      <div class="demo-box">
+        <p class="demo-title"><strong>Akun demo</strong> <span>klik untuk mengisi otomatis</span></p>
+        <div class="demo-grid">
+          <button class="demo-cred" type="button" data-fill-login data-email="me.rifqy@gmail.com" data-password="user123">
+            <span class="avatar avatar-xs avatar-forest">MR</span>
+            <span class="demo-cred-text"><strong>Akun siswa</strong><span>me.rifqy@gmail.com · user123</span></span>
+          </button>
+          <button class="demo-cred" type="button" data-fill-login data-email="admin@kelompok4.id" data-password="admin123">
+            <span class="avatar avatar-xs avatar-amber">AK</span>
+            <span class="demo-cred-text"><strong>Akun admin</strong><span>admin@kelompok4.id · admin123</span></span>
+          </button>
+        </div>
+      </div>
+
+      <p class="auth-switch">Belum punya akun? <a href="/daftar">Daftar gratis <%- icon('arrow-right') %></a></p>
+    </div>
+
+    <p class="auth-legal">© <%= currentYear %> Kelompok 4 Private Tutor</p>
+  </section>
+
+  <aside class="auth-visual">
+    <img src="/images/hero-tutoring.webp" alt="Tutor mendampingi siswa belajar" width="1100" height="1375">
+    <div class="auth-visual-content">
+      <span class="auth-quote-mark">“</span>
+      <blockquote>Pendidikan bukan tentang mengisi ember, tetapi menyalakan api.</blockquote>
+      <p class="auth-quote-by">— W. B. Yeats</p>
+      <div class="auth-visual-badges">
+        <span><strong>4,9/5</strong> rating tutor</span>
+        <span><strong>600+</strong> siswa terbimbing</span>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<%- include('../partials/flash') %>
+<script src="/js/main.js"></script>
+</body>
+</html>

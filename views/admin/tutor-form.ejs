@@ -1,0 +1,89 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: tutor ? 'Perbarui profil tutor yang tampil di situs.' : 'Tambahkan tutor baru ke tim pengajar Kelompok 4.' }) %>
+
+  <a class="back-link" href="/admin/tutor"><%- icon('arrow-left') %> Kembali ke daftar tutor</a>
+
+  <form class="admin-form-grid" method="post" action="<%= formAction %>">
+    <div class="admin-form-main">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Profil tutor</h2>
+            <p>Informasi dasar yang ditampilkan pada kartu tutor.</p>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <label for="name">Nama lengkap <span class="req">*</span></label>
+            <input id="name" name="name" type="text" value="<%= tutor ? tutor.name : '' %>" placeholder="Nama tutor" required minlength="3">
+          </div>
+          <div class="form-field">
+            <label for="title">Jabatan / gelar <span class="req">*</span></label>
+            <input id="title" name="title" type="text" value="<%= tutor ? tutor.title : '' %>" placeholder="Contoh: S2 Pendidikan Matematika" required>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="expertise">Bidang keahlian <span class="req">*</span></label>
+          <input id="expertise" name="expertise" type="text" value="<%= tutor ? tutor.expertise : '' %>" placeholder="Contoh: Matematika SMA · Olimpiade" required>
+        </div>
+
+        <div class="form-field">
+          <label for="bio">Bio singkat</label>
+          <textarea id="bio" name="bio" rows="4" placeholder="Pengalaman mengajar, pendekatan, dan pencapaian tutor."><%= tutor ? tutor.bio : '' %></textarea>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Statistik & atribut</h2>
+            <p>Angka yang tampil pada profil publik tutor.</p>
+          </div>
+        </div>
+        <div class="form-grid-3">
+          <div class="form-field">
+            <label for="rating">Rating (0–5)</label>
+            <input id="rating" name="rating" type="number" min="0" max="5" step="0.1" value="<%= tutor ? tutor.rating : 5 %>">
+          </div>
+          <div class="form-field">
+            <label for="students">Jumlah siswa</label>
+            <input id="students" name="students" type="number" min="0" step="1" value="<%= tutor ? tutor.students : 0 %>">
+          </div>
+          <div class="form-field">
+            <label for="accent">Warna aksen</label>
+            <select id="accent" name="accent">
+              <% ['sage', 'sky', 'amber', 'rose', 'violet'].forEach(function(accent) { %>
+                <option value="<%= accent %>" <%= tutor && tutor.accent === accent ? 'selected' : (!tutor && accent === 'sage' ? 'selected' : '') %>><%= accent.charAt(0).toUpperCase() + accent.slice(1) %></option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="badge">Label keunggulan</label>
+          <input id="badge" name="badge" type="text" value="<%= tutor ? tutor.badge : '' %>" placeholder="Contoh: Tutor terverifikasi · 8 tahun mengajar">
+          <span class="field-hint">Opsional. Tampil sebagai label kecil pada kartu tutor.</span>
+        </div>
+      </section>
+    </div>
+
+    <aside class="admin-form-side">
+      <section class="panel tutor-preview-card">
+        <h2>Pratinjau kartu</h2>
+        <div class="tutor-preview" data-tutor-preview>
+          <span class="avatar avatar-lg accent-sage"><%= tutor ? initials(tutor.name) : 'T' %></span>
+          <strong><%= tutor ? tutor.name : 'Nama Tutor' %></strong>
+          <span><%= tutor ? tutor.title : 'Jabatan tutor' %></span>
+        </div>
+        <p class="field-hint">Pratinjau sederhana. Kartu final mengikuti desain halaman Tutor Kami.</p>
+      </section>
+
+      <section class="panel admin-form-actions">
+        <button class="btn btn-primary btn-block" type="submit"><%- icon('check') %> <%= tutor ? 'Simpan perubahan' : 'Tambah tutor' %></button>
+        <a class="btn btn-ghost btn-block" href="/admin/tutor">Batal</a>
+      </section>
+    </aside>
+  </form>
+
+<%- include('../partials/dash-bottom') %>

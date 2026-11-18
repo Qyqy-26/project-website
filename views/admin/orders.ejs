@@ -1,0 +1,98 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Verifikasi pembayaran, perbarui status, dan buka invoice siswa.' }) %>
+
+  <% const tabQuery = function(nextStatus) { const params = new URLSearchParams(); if (nextStatus !== 'all') params.set('status', nextStatus); if (category !== 'all') params.set('kategori', category); if (q) params.set('q', q); const str = params.toString(); return '/admin/pesanan' + (str ? '?' + str : ''); }; %>
+
+  <div class="toolbar-row toolbar-row-top">
+    <div class="tabs" aria-label="Filter status pesanan">
+      <a class="tab <%= status === 'all' ? 'is-active' : '' %>" href="<%= tabQuery('all') %>">Semua <span><%= countMap.all || 0 %></span></a>
+      <a class="tab <%= status === 'pending' ? 'is-active' : '' %>" href="<%= tabQuery('pending') %>">Menunggu <span><%= countMap.pending || 0 %></span></a>
+      <a class="tab <%= status === 'paid' ? 'is-active' : '' %>" href="<%= tabQuery('paid') %>">Lunas <span><%= countMap.paid || 0 %></span></a>
+      <a class="tab <%= status === 'completed' ? 'is-active' : '' %>" href="<%= tabQuery('completed') %>">Selesai <span><%= countMap.completed || 0 %></span></a>
+      <a class="tab <%= status === 'cancelled' ? 'is-active' : '' %>" href="<%= tabQuery('cancelled') %>">Dibatalkan <span><%= countMap.cancelled || 0 %></span></a>
+    </div>
+    <a class="btn btn-outline btn-sm" href="/admin/laporan"><%- icon('download') %> Unduh laporan</a>
+  </div>
+
+  <section class="panel panel-flush">
+    <form class="filter-bar" method="get" action="/admin/pesanan" role="search">
+      <% if (status !== 'all') { %><input type="hidden" name="status" value="<%= status %>"><% } %>
+      <div class="filter-field filter-grow">
+        <label for="q">Cari pesanan</label>
+        <div class="input-with-icon">
+          <span><%- icon('search') %></span>
+          <input id="q" type="search" name="q" value="<%= q %>" placeholder="Kode, invoice, nama siswa, atau program">
+        </div>
+      </div>
+      <div class="filter-field">
+        <label for="kategori">Kategori</label>
+        <select id="kategori" name="kategori">
+          <option value="all" <%= category === 'all' ? 'selected' : '' %>>Semua kategori</option>
+          <% categories.forEach(function(item) { %>
+            <option value="<%= item.slug %>" <%= category === item.slug ? 'selected' : '' %>><%= item.label %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-primary btn-sm" type="submit"><%- icon('filter') %> Terapkan</button>
+        <a class="btn btn-ghost btn-sm" href="/admin/pesanan">Reset</a>
+      </div>
+    </form>
+
+    <% if (orders.length === 0) { %>
+      <div class="empty-state empty-state-sm">
+        <span class="empty-icon"><%- icon('search') %></span>
+        <h2>Tidak ada pesanan yang cocok</h2>
+        <p>Coba ubah kata kunci, kategori, atau status pesanan.</p>
+        <a class="btn btn-outline" href="/admin/pesanan">Bersihkan filter</a>
+      </div>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table data-table-orders">
+          <thead>
+            <tr>
+              <th>Pesanan</th>
+              <th>Siswa</th>
+              <th>Program</th>
+              <th>Dibuat</th>
+              <th>Total</th>
+              <th>Metode</th>
+              <th>Status</th>
+              <th class="th-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach(function(order) { %>
+              <tr>
+                <td>
+                  <a class="cell-strong nowrap" href="/admin/pesanan/<%= order.code %>"><%= order.code %></a>
+                  <span class="cell-sub"><%= order.invoice_no %></span>
+                </td>
+                <td>
+                  <span class="cell-strong"><%= order.user_name %></span>
+                  <span class="cell-sub"><%= order.user_email %></span>
+                </td>
+                <td>
+                  <span class="cell-strong"><%= order.program_title %></span>
+                  <span class="cell-sub"><%= categoryBy(order.category).label %> · <%= order.sessions %> sesi</span>
+                </td>
+                <td><%= formatDateID(order.created_at, 'short') %><span class="cell-sub"><%= formatDateID(order.created_at, 'numeric') %></span></td>
+                <td class="cell-strong nowrap"><%= formatRupiah(order.total) %></td>
+                <td><span class="method-tag"><%- icon(paymentMethodBy(order.method).icon) %> <%= paymentMethodBy(order.method).name %></span></td>
+                <td><span class="badge badge-<%= statusMeta(order.status).tone %>"><%= statusMeta(order.status).label %></span></td>
+                <td class="td-right">
+                  <div class="row-actions">
+                    <a class="btn btn-outline btn-xs" href="/admin/pesanan/<%= order.code %>">Kelola</a>
+                    <a class="icon-link" href="/admin/pesanan/<%= order.code %>/invoice" target="_blank" rel="noopener" title="Buka invoice PDF"><%- icon('file-text') %></a>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-footnote">Menampilkan maksimal 150 pesanan terbaru sesuai filter.</p>
+    <% } %>
+  </section>
+
+<%- include('../partials/dash-bottom') %>

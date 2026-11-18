@@ -1,0 +1,61 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Daftar siswa terdaftar beserta aktivitas transaksinya.' }) %>
+
+  <section class="panel panel-flush">
+    <form class="filter-bar" method="get" action="/admin/pengguna" role="search">
+      <div class="filter-field filter-grow">
+        <label for="q">Cari siswa</label>
+        <div class="input-with-icon">
+          <span><%- icon('search') %></span>
+          <input id="q" type="search" name="q" value="<%= q %>" placeholder="Nama, email, atau nomor telepon">
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-primary btn-sm" type="submit"><%- icon('search') %> Cari</button>
+        <% if (q) { %><a class="btn btn-ghost btn-sm" href="/admin/pengguna">Reset</a><% } %>
+      </div>
+    </form>
+
+    <% if (users.length === 0) { %>
+      <div class="empty-state empty-state-sm">
+        <span class="empty-icon"><%- icon('users') %></span>
+        <h2>Tidak ada siswa ditemukan</h2>
+        <p>Coba gunakan kata kunci lain atau bersihkan pencarian.</p>
+        <a class="btn btn-outline" href="/admin/pengguna">Lihat semua siswa</a>
+      </div>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Siswa</th><th>Kontak</th><th>Bergabung</th><th>Pesanan</th><th>Total belanja</th><th>Pesanan terakhir</th><th class="th-right">Aksi</th></tr>
+          </thead>
+          <tbody>
+            <% users.forEach(function(item) { %>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="avatar avatar-sm avatar-forest"><%= initials(item.name) %></span>
+                    <div>
+                      <span class="cell-strong"><%= item.name %></span>
+                      <span class="cell-sub"><%= item.email %></span>
+                    </div>
+                  </div>
+                </td>
+                <td><%= item.phone || '—' %></td>
+                <td><%= formatDateID(item.created_at, 'short') %></td>
+                <td><%= item.order_count %></td>
+                <td class="cell-strong"><%= formatRupiah(item.spent) %></td>
+                <td><%= item.last_order ? formatDateID(item.last_order, 'short') : 'Belum pernah' %></td>
+                <td class="td-right">
+                  <a class="icon-link" href="/admin/pesanan?q=<%= encodeURIComponent(item.email) %>" title="Lihat pesanan siswa"><%- icon('receipt') %></a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-footnote"><%= users.length %> siswa ditampilkan<%= q ? ' untuk pencarian "' + q + '"' : '' %>.</p>
+    <% } %>
+  </section>
+
+<%- include('../partials/dash-bottom') %>

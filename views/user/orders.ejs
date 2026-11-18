@@ -1,0 +1,73 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Semua transaksi, status pembayaran, dan invoice kamu.' }) %>
+
+  <div class="toolbar-row">
+    <div class="tabs" aria-label="Filter status pesanan">
+      <a class="tab <%= status === 'all' ? 'is-active' : '' %>" href="/dashboard/pesanan">Semua <span><%= countMap.all || 0 %></span></a>
+      <a class="tab <%= status === 'pending' ? 'is-active' : '' %>" href="/dashboard/pesanan?status=pending">Menunggu <span><%= countMap.pending || 0 %></span></a>
+      <a class="tab <%= status === 'paid' ? 'is-active' : '' %>" href="/dashboard/pesanan?status=paid">Lunas <span><%= countMap.paid || 0 %></span></a>
+      <a class="tab <%= status === 'completed' ? 'is-active' : '' %>" href="/dashboard/pesanan?status=completed">Selesai <span><%= countMap.completed || 0 %></span></a>
+      <a class="tab <%= status === 'cancelled' ? 'is-active' : '' %>" href="/dashboard/pesanan?status=cancelled">Dibatalkan <span><%= countMap.cancelled || 0 %></span></a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="/program"><%- icon('plus') %> Pesan program</a>
+  </div>
+
+  <section class="panel panel-flush">
+    <% if (orders.length === 0) { %>
+      <div class="empty-state empty-state-sm">
+        <span class="empty-icon"><%- icon('receipt') %></span>
+        <h2>Belum ada pesanan di kategori ini</h2>
+        <p>Mulai dengan memilih program yang paling sesuai untukmu.</p>
+        <a class="btn btn-primary" href="/program">Lihat katalog program</a>
+      </div>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table data-table-orders">
+          <thead>
+            <tr>
+              <th>Pesanan</th>
+              <th>Program</th>
+              <th>Jadwal mulai</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th class="th-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach(function(order) { %>
+              <tr>
+                <td>
+                  <a class="cell-strong nowrap" href="/dashboard/pesanan/<%= order.code %>"><%= order.code %></a>
+                  <span class="cell-sub"><%= order.invoice_no %></span>
+                  <span class="cell-sub"><%= formatDateID(order.created_at, 'short') %></span>
+                </td>
+                <td>
+                  <span class="cell-strong"><%= order.program_title %></span>
+                  <span class="cell-sub"><%= categoryBy(order.category).label %> · <%= order.sessions %> sesi</span>
+                </td>
+                <td data-label="Jadwal mulai">
+                  <%= formatDateID(order.start_date, 'short') %>
+                  <span class="cell-sub"><%= order.time_slot %></span>
+                </td>
+                <td class="cell-strong nowrap" data-label="Total"><%= formatRupiah(order.total) %></td>
+                <td data-label="Status"><span class="badge badge-<%= statusMeta(order.status).tone %>"><%= statusMeta(order.status).label %></span></td>
+                <td class="td-right">
+                  <div class="row-actions">
+                    <% if (order.status === 'pending') { %>
+                      <a class="btn btn-primary btn-xs" href="/dashboard/pesanan/<%= order.code %>">Bayar</a>
+                    <% } %>
+                    <a class="btn btn-outline btn-xs" href="/dashboard/pesanan/<%= order.code %>">Detail</a>
+                    <a class="icon-link" href="/dashboard/pesanan/<%= order.code %>/invoice" target="_blank" rel="noopener" title="Buka invoice PDF"><%- icon('file-text') %></a>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+  <p class="table-footnote">Invoice PDF dapat dibuka kapan saja dan digunakan sebagai bukti pembayaran resmi.</p>
+
+<%- include('../partials/dash-bottom') %>

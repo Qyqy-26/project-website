@@ -1,0 +1,331 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<%- include('../partials/flash') %>
+
+<main>
+  <section class="hero">
+    <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-dot"></span> Kelompok 4 private tutor sejak 2026</p>
+        <h1 class="display">Belajar yang <span class="nowrap">benar-benar</span> <em>personal</em>, hasil yang <span class="highlight">nyata.</span></h1>
+        <p class="lede">Matematika, bahasa Inggris, pemrograman, desain, hingga keterampilan digital. Didampingi tutor pilihan dengan rencana belajar yang dibuat khusus untukmu.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="/program">Temukan program <%- icon('arrow-right') %></a>
+          <a class="btn btn-outline btn-lg" href="#cara-kerja"><span class="play-dot"><%- icon('play') %></span> Lihat cara kerja</a>
+        </div>
+        <div class="hero-proof">
+          <div class="avatar-stack" aria-hidden="true">
+            <span class="avatar avatar-sm avatar-forest">RK</span>
+            <span class="avatar avatar-sm avatar-amber">DP</span>
+            <span class="avatar avatar-sm avatar-sky">SM</span>
+            <span class="avatar avatar-sm avatar-more">+600</span>
+          </div>
+          <div class="proof-copy">
+            <span class="stars"><%- icon('star') %><%- icon('star') %><%- icon('star') %><%- icon('star') %><%- icon('star') %></span>
+            <span>4,9/5 dari 400+ ulasan siswa</span>
+          </div>
+        </div>
+        <dl class="hero-stats">
+          <div><dt>Siswa terbimbing</dt><dd>600<span>+</span></dd></div>
+          <div><dt>Tutor tersertifikasi</dt><dd><%= stats.tutors %></dd></div>
+          <div><dt>Program aktif</dt><dd><%= stats.programs %></dd></div>
+        </dl>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-frame">
+          <img src="/images/hero-tutoring.webp" width="1100" height="1375" alt="Tutor Kelompok 4 mendampingi siswa belajar di meja kayu">
+          <span class="hero-tag hero-tag-top">Belajar 1-on-1</span>
+          <span class="hero-tag hero-tag-bottom"><%- icon('shield') %> Tutor terverifikasi</span>
+        </div>
+
+        <div class="float-card float-session">
+          <span class="float-icon"><%- icon('video') %></span>
+          <div>
+            <span class="float-label">Sesi berikutnya</span>
+            <strong>Matematika • 16.00</strong>
+            <span class="float-sub">Bersama Kak Ratna</span>
+          </div>
+        </div>
+
+        <div class="float-card float-progress">
+          <div class="progress-head">
+            <span class="float-label">Progres belajar</span>
+            <span class="badge badge-green">+32%</span>
+          </div>
+          <strong>Lebih percaya diri</strong>
+          <div class="spark-bars" aria-hidden="true">
+            <i style="height:34%"></i><i style="height:52%"></i><i style="height:44%"></i><i style="height:70%"></i><i style="height:86%"></i><i style="height:100%"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Matematika</span><span class="marquee-star">✦</span>
+      <span>Bahasa Inggris</span><span class="marquee-star">✦</span>
+      <span>Pemrograman</span><span class="marquee-star">✦</span>
+      <span>Desain</span><span class="marquee-star">✦</span>
+      <span>Keterampilan Digital</span><span class="marquee-star">✦</span>
+      <span>IELTS</span><span class="marquee-star">✦</span>
+      <span>Matematika</span><span class="marquee-star">✦</span>
+      <span>Bahasa Inggris</span><span class="marquee-star">✦</span>
+      <span>Pemrograman</span><span class="marquee-star">✦</span>
+      <span>Desain</span><span class="marquee-star">✦</span>
+      <span>Keterampilan Digital</span><span class="marquee-star">✦</span>
+      <span>IELTS</span><span class="marquee-star">✦</span>
+    </div>
+  </div>
+
+  <section class="section" id="program">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Bidang belajar</p>
+          <h2 class="display-2">Satu tempat untuk semua <em>keterampilan</em>.</h2>
+        </div>
+        <p class="section-desc">Mulai dari penguatan pelajaran sekolah sampai skill digital yang dibutuhkan dunia kerja. Semua dengan pendampingan yang sabar dan terarah.</p>
+      </div>
+
+      <div class="category-grid">
+        <% categories.forEach(function(cat) { %>
+          <a class="category-card tint-<%= cat.tint %>" href="/program?kategori=<%= cat.slug %>">
+            <span class="cat-icon"><%- icon(cat.icon) %></span>
+            <h3><%= cat.label %></h3>
+            <p><%= cat.blurb %></p>
+            <span class="cat-meta"><%= categoryCount[cat.slug] || 0 %> program <%- icon('arrow-up-right') %></span>
+          </a>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tint">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Paling diminati</p>
+          <h2 class="display-2">Mulai dari program <em>favorit</em> siswa.</h2>
+        </div>
+        <a class="text-link" href="/program">Lihat semua program <%- icon('arrow-right') %></a>
+      </div>
+
+      <div class="program-grid">
+        <% featured.forEach(function(program) { %>
+          <%- include('../partials/program-card', { program: program }) %>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="kenapa">
+    <div class="container split">
+      <div class="split-media">
+        <div class="split-image-frame">
+          <img src="/images/online-class.webp" width="1400" height="933" alt="Suasana kelas online Kelompok 4 dengan laptop dan catatan">
+        </div>
+        <div class="split-stat">
+          <span class="stat-number">92<span>%</span></span>
+          <p>Siswa merasa lebih percaya diri setelah 8 sesi pertama.</p>
+          <span class="stat-source">Survei internal Kelompok 4, 2026</span>
+        </div>
+        <div class="split-badge"><%- icon('check-circle') %> Laporan progres tiap bulan</div>
+      </div>
+
+      <div class="split-copy">
+        <p class="eyebrow">Kenapa Kelompok 4</p>
+        <h2 class="display-2">Belajar dari mana saja, tetap terasa <em>tatap muka</em>.</h2>
+        <p class="split-lede">Kami percaya belajar paling efektif ketika tutor benar-benar memahami cara berpikir siswa. Karena itu setiap program dimulai dengan pemetaan kebutuhan, bukan langsung ke materi.</p>
+
+        <ul class="feature-list">
+          <li>
+            <span class="feature-icon"><%- icon('shield') %></span>
+            <div><strong>Tutor terkurasi</strong><p>Setiap tutor melewati seleksi mengajar, uji materi, dan evaluasi berkelanjutan.</p></div>
+          </li>
+          <li>
+            <span class="feature-icon"><%- icon('calendar') %></span>
+            <div><strong>Jadwal fleksibel</strong><p>Pilih waktu belajar yang cocok, termasuk sore dan akhir pekan.</p></div>
+          </li>
+          <li>
+            <span class="feature-icon"><%- icon('file-text') %></span>
+            <div><strong>Progres terukur</strong><p>Rangkuman belajar dan rekomendasi tutor dikirim rutin setiap bulan.</p></div>
+          </li>
+          <li>
+            <span class="feature-icon"><%- icon('video') %></span>
+            <div><strong>Online & tatap muka</strong><p>Belajar dari rumah lewat kelas online, atau pilih sesi offline di Jakarta.</p></div>
+          </li>
+        </ul>
+
+        <a class="text-link" href="/tutor">Kenali tutor kami <%- icon('arrow-right') %></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark" id="cara-kerja">
+    <div class="container">
+      <div class="section-head section-head-light">
+        <div>
+          <p class="eyebrow eyebrow-light">Cara kerja</p>
+          <h2 class="display-2">Tiga langkah menuju <em>sesi pertama</em>.</h2>
+        </div>
+        <p class="section-desc">Tanpa proses berbelit. Pilih program, bayar dengan aman, lalu mulai belajar bersama tutor pilihanmu.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <span class="step-number">01</span>
+          <div class="step-body">
+            <h3>Pilih program & jadwal</h3>
+            <p>Temukan bidang yang ingin kamu kuasai, pilih paket sesi, lalu tentukan tanggal dan jam belajar.</p>
+          </div>
+          <span class="step-icon"><%- icon('search') %></span>
+        </div>
+        <div class="step">
+          <span class="step-number">02</span>
+          <div class="step-body">
+            <h3>Bayar dengan aman</h3>
+            <p>Selesaikan pembayaran lewat virtual account, QRIS, atau e-wallet. Invoice resmi langsung tersedia.</p>
+          </div>
+          <span class="step-icon"><%- icon('shield') %></span>
+        </div>
+        <div class="step">
+          <span class="step-number">03</span>
+          <div class="step-body">
+            <h3>Mulai belajar</h3>
+            <p>Jadwal sesi otomatis masuk ke dashboard. Pantau progres dan unduh laporan belajar kapan saja.</p>
+          </div>
+          <span class="step-icon"><%- icon('graduation') %></span>
+        </div>
+      </div>
+
+      <div class="steps-cta">
+        <p>Belum yakin program mana yang tepat?</p>
+        <a class="btn btn-accent" href="mailto:<%= app.email %>?subject=Konsultasi%20Program%20Kelompok%204">Konsultasi gratis <%- icon('arrow-right') %></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Tutor kami</p>
+          <h2 class="display-2">Dibimbing oleh orang yang <em>tepat</em>.</h2>
+        </div>
+        <a class="text-link" href="/tutor">Lihat semua tutor <%- icon('arrow-right') %></a>
+      </div>
+
+      <div class="tutor-grid">
+        <% tutorList.forEach(function(tutor) { %>
+          <a class="tutor-card" href="/tutor">
+            <span class="tutor-avatar accent-<%= tutor.accent %>"><%= initials(tutor.name) %></span>
+            <% if (tutor.badge) { %><span class="tutor-badge"><%= tutor.badge %></span><% } %>
+            <h3><%= tutor.name %></h3>
+            <p class="tutor-expertise"><%= tutor.expertise %></p>
+            <div class="tutor-meta">
+              <span class="rating"><%- icon('star') %> <%= Number(tutor.rating).toFixed(1) %></span>
+              <span><%= formatNumber(tutor.students) %> siswa</span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tint">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Cerita mereka</p>
+          <h2 class="display-2">Hasil kecil yang <em>berarti besar</em>.</h2>
+        </div>
+      </div>
+
+      <div class="testimonial-grid">
+        <figure class="testimonial testimonial-featured">
+          <span class="quote-mark">“</span>
+          <blockquote>Anak saya dulu menangis kalau disuruh belajar matematika. Sekarang dia yang mengingatkan jadwal sesi. Tutor Kelompok 4 sabar sekali dan selalu memberi laporan yang jelas.</blockquote>
+          <figcaption>
+            <span class="avatar avatar-sm avatar-amber">SA</span>
+            <div><strong>Sari Anggraeni</strong><span>Orang tua siswa SMP</span></div>
+          </figcaption>
+        </figure>
+        <figure class="testimonial">
+          <span class="stars"><%- icon('star') %><%- icon('star') %><%- icon('star') %><%- icon('star') %><%- icon('star') %></span>
+          <blockquote>Sesi IELTS-nya sangat terstruktur. Setiap esai saya dapat koreksi detail, dan strategi tiap section dibahas satu per satu. Skor saya naik dari 6.0 ke 7.5.</blockquote>
+          <figcaption>
+            <span class="avatar avatar-sm avatar-sky">KW</span>
+            <div><strong>Kevin Wijaya</strong><span>Mahasiswa, penerima beasiswa</span></div>
+          </figcaption>
+        </figure>
+        <figure class="testimonial">
+          <span class="stars"><%- icon('star') %><%- icon('star') %><%- icon('star') %><%- icon('star') %><%- icon('star') %></span>
+          <blockquote>Materi UI/UX-nya aplikatif. Saya bikin studi kasus dari nol dan sekarang bisa menunjukkan portofolio yang relevan saat interview.</blockquote>
+          <figcaption>
+            <span class="avatar avatar-sm avatar-rose">DP</span>
+            <div><strong>Dinda Pratiwi</strong><span>Product designer pemula</span></div>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq">
+    <div class="container faq-grid">
+      <div class="faq-copy">
+        <p class="eyebrow">Pertanyaan umum</p>
+        <h2 class="display-2">Hal yang sering <em>ditanyakan</em>.</h2>
+        <p class="section-desc">Masih ada pertanyaan lain? Tim kami siap membantu setiap hari kerja, 09.00–18.00 WIB.</p>
+        <a class="btn btn-outline" href="mailto:<%= app.email %>">Hubungi tim Kelompok 4 <%- icon('message') %></a>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item" open>
+          <summary>Apakah saya bisa memilih tutor sendiri?<span class="faq-icon"><%- icon('plus') %></span></summary>
+          <p>Tentu. Program yang kamu pilih sudah memiliki tutor utama, namun kamu bisa berdiskusi dengan tim kami untuk menyesuaikan tutor, jadwal, atau kebutuhan khusus.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Bagaimana jika harus mengubah jadwal sesi?<span class="faq-icon"><%- icon('plus') %></span></summary>
+          <p>Perubahan jadwal bisa diajukan maksimal 24 jam sebelum sesi dimulai melalui dashboard atau dengan menghubungi admin. Tim kami akan mencarikan slot pengganti tanpa biaya tambahan.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Metode pembayaran apa saja yang tersedia?<span class="faq-icon"><%- icon('plus') %></span></summary>
+          <p>Kami menerima transfer melalui BCA Virtual Account, Mandiri Virtual Account, QRIS, dan GoPay. Invoice resmi dapat diunduh dalam format PDF setelah pembayaran terverifikasi.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Apakah kelas online menggunakan rekaman?<span class="faq-icon"><%- icon('plus') %></span></summary>
+          <p>Untuk program tertentu, sesi online dapat direkam atas persetujuan tutor dan siswa. Rekaman bisa diakses kembali di dashboard untuk mengulang materi.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Apakah ada garansi ganti tutor?<span class="faq-icon"><%- icon('plus') %></span></summary>
+          <p>Jika setelah dua sesi kamu merasa tutor belum cocok, kami akan mengganti tutor tanpa biaya tambahan. Kenyamanan belajar adalah prioritas kami.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-panel">
+        <div class="cta-orb" aria-hidden="true"></div>
+        <div class="cta-copy">
+          <p class="eyebrow eyebrow-light">Mulai hari ini</p>
+          <h2 class="display-2">Siap memulai perjalanan <em>belajarmu</em>?</h2>
+          <p>Buat akun gratis, pilih program, dan rasakan bedanya belajar dengan pendampingan yang personal.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-accent btn-lg" href="/daftar">Buat akun gratis <%- icon('arrow-right') %></a>
+          <a class="btn btn-ghost-light btn-lg" href="/program">Jelajahi program</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

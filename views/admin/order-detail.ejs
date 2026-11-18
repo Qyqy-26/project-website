@@ -1,0 +1,214 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Verifikasi pembayaran dan kelola status pesanan siswa.' }) %>
+
+  <a class="back-link" href="/admin/pesanan"><%- icon('arrow-left') %> Kembali ke daftar pesanan</a>
+
+  <div class="order-header">
+    <div>
+      <div class="order-header-top">
+        <h2 class="order-code"><%= order.code %></h2>
+        <span class="badge badge-<%= statusMeta(order.status).tone %>"><%= statusMeta(order.status).label %></span>
+      </div>
+      <p class="order-sub">Dibuat <%= formatDateTimeID(order.created_at) %> · Invoice <%= order.invoice_no %></p>
+    </div>
+    <div class="order-header-actions">
+      <a class="btn btn-outline btn-sm" href="/admin/pesanan/<%= order.code %>/invoice" target="_blank" rel="noopener"><%- icon('printer') %> Cetak invoice</a>
+      <a class="btn btn-outline btn-sm" href="/admin/pesanan/<%= order.code %>/invoice?download=1"><%- icon('download') %> Unduh PDF</a>
+    </div>
+  </div>
+
+  <div class="detail-grid detail-grid-order">
+    <div class="detail-main">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Informasi siswa</h2>
+            <p>Data pemesan yang terhubung dengan pesanan ini.</p>
+          </div>
+        </div>
+        <div class="student-strip">
+          <span class="avatar avatar-md avatar-forest"><%= initials(order.user_name) %></span>
+          <div class="student-strip-info">
+            <strong><%= order.user_name %></strong>
+            <span><%= order.user_email %><%= order.user_phone ? ' · ' + order.user_phone : '' %></span>
+          </div>
+          <div class="student-strip-stats">
+            <div><span>Pesanan</span><strong><%= userStats.orders %></strong></div>
+            <div><span>Total belanja</span><strong><%= formatRupiah(userStats.spent) %></strong></div>
+          </div>
+          <a class="btn btn-outline btn-sm" href="/admin/pengguna?q=<%= encodeURIComponent(order.user_email) %>">Lihat siswa</a>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Informasi program</h2>
+            <p>Detail program dan jadwal yang dipesan.</p>
+          </div>
+          <span class="pill tint-<%= categoryBy(order.category).tint %>"><%= categoryBy(order.category).label %></span>
+        </div>
+        <div class="order-program">
+          <div class="order-program-icon tint-<%= categoryBy(order.category).tint %>">
+            <%- icon(categoryBy(order.category).icon) %>
+          </div>
+          <div class="order-program-info">
+            <h3><%= order.program_title %></h3>
+            <p><%= order.tutor_name %> · <%= modeLabel(order.mode) %> · <%= order.level %></p>
+            <div class="order-program-meta">
+              <span><%- icon('calendar') %> Mulai <%= formatDateID(order.start_date, 'short') %></span>
+              <span><%- icon('clock') %> <%= order.time_slot %> WIB</span>
+              <span><%- icon('book') %> <%= order.sessions %> sesi</span>
+            </div>
+          </div>
+        </div>
+        <% if (order.notes) { %>
+          <div class="order-notes">
+            <span class="tiny-label">Catatan siswa</span>
+            <p><%= order.notes %></p>
+          </div>
+        <% } %>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Riwayat pembayaran</h2>
+            <p>Semua percobaan pembayaran untuk pesanan ini.</p>
+          </div>
+        </div>
+        <% if (payments.length === 0) { %>
+          <div class="empty-inline">
+            <span class="empty-inline-icon"><%- icon('credit-card') %></span>
+            <div><strong>Belum ada percobaan pembayaran</strong><p>Siswa belum memilih metode atau membuka halaman pembayaran.</p></div>
+          </div>
+        <% } else { %>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>Referensi</th><th>Metode</th><th>Nominal</th><th>Status</th><th>Dibuat</th><th>Dibayar</th></tr>
+              </thead>
+              <tbody>
+                <% payments.forEach(function(payment) { %>
+                  <tr>
+                    <td>
+                      <span class="cell-strong mono"><%= payment.ref %></span>
+                      <span class="cell-sub"><%= payment.provider %><%= payment.va_number ? ' · VA ' + payment.va_number : '' %></span>
+                    </td>
+                    <td><span class="method-tag"><%- icon(paymentMethodBy(payment.method).icon) %> <%= paymentMethodBy(payment.method).name %></span></td>
+                    <td class="cell-strong"><%= formatRupiah(payment.amount) %></td>
+                    <td>
+                      <span class="badge badge-<%= payment.status === 'success' ? 'green' : payment.status === 'pending' ? 'amber' : 'ink' %>">
+                        <%= payment.status === 'success' ? 'Berhasil' : payment.status === 'pending' ? 'Menunggu' : 'Kedaluwarsa' %>
+                      </span>
+                    </td>
+                    <td><%= formatDateTimeID(payment.created_at) %></td>
+                    <td><%= payment.paid_at ? formatDateTimeID(payment.paid_at) : '—' %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Jadwal sesi</h2>
+            <p><%= sessions.length %> sesi tercatat untuk pesanan ini.</p>
+          </div>
+        </div>
+        <% if (sessions.length === 0) { %>
+          <div class="empty-inline">
+            <span class="empty-inline-icon"><%- icon('calendar') %></span>
+            <div><strong>Jadwal belum dibuat</strong><p>Jadwal otomatis terbentuk setelah pembayaran dikonfirmasi.</p></div>
+          </div>
+        <% } else { %>
+          <div class="session-table">
+            <% sessions.forEach(function(session) { %>
+              <div class="session-row">
+                <span class="session-seq"><%= String(session.seq).padStart(2, '0') %></span>
+                <div class="session-row-main">
+                  <strong><%= formatDateID(session.date, 'weekday') %></strong>
+                  <span><%= session.time_slot %> WIB · <%= modeLabel(order.mode) %></span>
+                </div>
+                <span class="badge badge-<%= session.status === 'done' ? 'ink' : 'green' %>"><%= session.status === 'done' ? 'Selesai' : 'Terjadwal' %></span>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+      </section>
+    </div>
+
+    <aside class="detail-side">
+      <section class="panel payment-summary-card">
+        <h2>Ringkasan pembayaran</h2>
+        <div class="summary-rows">
+          <div><span>Harga per sesi</span><strong><%= formatRupiah(order.price) %></strong></div>
+          <div><span>Subtotal (<%= order.sessions %> sesi)</span><strong><%= formatRupiah(order.subtotal) %></strong></div>
+          <% if (order.discount > 0) { %>
+            <div class="text-green"><span>Diskon paket</span><strong>- <%= formatRupiah(order.discount) %></strong></div>
+          <% } %>
+          <div><span>Biaya layanan</span><strong><%= formatRupiah(order.fee) %></strong></div>
+          <div class="summary-total"><span>Total</span><strong><%= formatRupiah(order.total) %></strong></div>
+        </div>
+
+        <div class="payment-meta">
+          <div><span>Status</span><span class="badge badge-<%= statusMeta(order.status).tone %>"><%= statusMeta(order.status).label %></span></div>
+          <% if (order.method) { %>
+            <div><span>Metode</span><strong><%= paymentGroupLabel[order.method] || order.method %></strong></div>
+          <% } %>
+          <% if (order.payment_ref) { %>
+            <div><span>Referensi</span><strong class="mono"><%= order.payment_ref %></strong></div>
+          <% } %>
+          <% if (order.paid_at) { %>
+            <div><span>Dibayar pada</span><strong><%= formatDateTimeID(order.paid_at) %></strong></div>
+          <% } %>
+        </div>
+      </section>
+
+      <section class="panel admin-actions-card">
+        <h2>Tindakan admin</h2>
+        <p class="panel-note">Setiap perubahan status langsung memengaruhi dashboard siswa dan laporan keuangan.</p>
+
+        <% if (order.status === 'pending') { %>
+          <form method="post" action="/admin/pesanan/<%= order.code %>/status" data-confirm="Konfirmasi pembayaran pesanan ini sebagai lunas?">
+            <input type="hidden" name="action" value="paid">
+            <button class="btn btn-primary btn-block" type="submit"><%- icon('check-circle') %> Konfirmasi pembayaran</button>
+          </form>
+          <form method="post" action="/admin/pesanan/<%= order.code %>/status" data-confirm="Batalkan pesanan ini? Siswa tidak akan bisa melanjutkan pembayaran.">
+            <input type="hidden" name="action" value="cancelled">
+            <button class="btn btn-danger-soft btn-block" type="submit"><%- icon('x-circle') %> Batalkan pesanan</button>
+          </form>
+        <% } else if (order.status === 'paid') { %>
+          <form method="post" action="/admin/pesanan/<%= order.code %>/status" data-confirm="Tandai seluruh sesi sebagai selesai?">
+            <input type="hidden" name="action" value="completed">
+            <button class="btn btn-primary btn-block" type="submit"><%- icon('award') %> Tandai selesai</button>
+          </form>
+          <form method="post" action="/admin/pesanan/<%= order.code %>/status" data-confirm="Batalkan pesanan yang sudah lunas? Status pembayaran tidak otomatis refund.">
+            <input type="hidden" name="action" value="cancelled">
+            <button class="btn btn-danger-soft btn-block" type="submit"><%- icon('x-circle') %> Batalkan pesanan</button>
+          </form>
+        <% } else { %>
+          <div class="empty-inline empty-inline-vertical">
+            <span class="empty-inline-icon"><%- icon(order.status === 'completed' ? 'award' : 'lock') %></span>
+            <div>
+              <strong><%= order.status === 'completed' ? 'Pesanan selesai' : 'Pesanan dibatalkan' %></strong>
+              <p><%= order.status === 'completed' ? 'Tidak ada tindakan lanjutan yang diperlukan.' : 'Pesanan ini sudah ditutup dan tidak dapat diubah.' %></p>
+            </div>
+          </div>
+        <% } %>
+
+        <a class="btn btn-ghost btn-block" href="/admin/pesanan/<%= order.code %>/invoice?download=1"><%- icon('download') %> Unduh invoice</a>
+      </section>
+
+      <section class="panel help-card">
+        <span class="help-icon"><%- icon('info') %></span>
+        <h3>Pembayaran manual</h3>
+        <p>Jika dana masuk melalui transfer manual, konfirmasi pembayaran akan mencatat metode "Transfer Manual" pada laporan.</p>
+      </section>
+    </aside>
+  </div>
+
+<%- include('../partials/dash-bottom') %>

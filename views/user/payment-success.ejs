@@ -1,0 +1,42 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Pembayaran kamu berhasil diverifikasi.' }) %>
+<% const nextSession = sessions.find(function(s) { return s.status === 'scheduled'; }); %>
+
+  <div class="success-wrap">
+    <div class="success-card">
+      <div class="success-check">
+        <span class="success-ring"></span>
+        <span class="success-icon"><%- icon('check') %></span>
+      </div>
+      <p class="eyebrow">Pembayaran terverifikasi</p>
+      <h2 class="display-3">Terima kasih, <%= user.name.split(' ')[0] %>!</h2>
+      <p class="success-lede">Pesanan <strong><%= order.code %></strong> sudah aktif. Invoice resmi dan jadwal sesi sudah tersedia di dashboard kamu.</p>
+
+      <div class="success-details">
+        <div><span>Total dibayar</span><strong><%= formatRupiah(order.total) %></strong></div>
+        <div><span>Metode</span><strong><%= paymentGroupLabel[order.method] || order.method %></strong></div>
+        <div><span>Program</span><strong><%= order.program_title %></strong></div>
+        <div><span>Mulai belajar</span><strong><%= formatDateID(order.start_date, 'short') %></strong></div>
+      </div>
+
+      <% if (nextSession) { %>
+        <div class="next-session-banner">
+          <span class="next-session-icon"><%- icon('calendar') %></span>
+          <div>
+            <span class="tiny-label">Sesi pertama kamu</span>
+            <strong><%= formatDateID(nextSession.date, 'weekday') %> · <%= nextSession.time_slot %> WIB</strong>
+            <span>Bersama <%= order.tutor_name %> · <%= modeLabel(order.mode) %></span>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="success-actions">
+        <a class="btn btn-primary" href="/dashboard">Ke dashboard <%- icon('arrow-right') %></a>
+        <a class="btn btn-outline" href="/dashboard/pesanan/<%= order.code %>/invoice" target="_blank" rel="noopener"><%- icon('file-text') %> Lihat invoice</a>
+        <a class="btn btn-outline" href="/dashboard/jadwal"><%- icon('calendar') %> Lihat jadwal</a>
+      </div>
+      <p class="success-note">Pengingat sesi akan dikirim melalui WhatsApp dan email sebelum kelas dimulai.</p>
+    </div>
+  </div>
+
+<%- include('../partials/dash-bottom') %>

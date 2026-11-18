@@ -1,0 +1,32 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="error-page">
+  <div class="container">
+    <div class="error-card">
+      <span class="error-code">404</span>
+      <p class="eyebrow">Halaman tidak ditemukan</p>
+      <h1 class="display-2">Sepertinya kamu salah belok.</h1>
+      <p class="error-lede">Halaman yang kamu cari sudah dipindahkan, dihapus, atau tidak pernah ada. Mari kembali ke jalur belajar.</p>
+      <div class="error-actions">
+        <a class="btn btn-primary" href="/"><%- icon('home') %> Kembali ke beranda</a>
+        <a class="btn btn-outline" href="/program">Jelajahi program</a>
+        <% if (user) { %>
+          <a class="btn btn-ghost" href="<%= user.role === 'admin' ? '/admin' : '/dashboard' %>">Buka dashboard</a>
+        <% } %>
+      </div>
+      <div class="error-suggestions">
+        <p>Mungkin kamu mencari:</p>
+        <div class="error-links">
+          <a href="/program">Katalog program <%- icon('arrow-up-right') %></a>
+          <a href="/tutor">Tutor kami <%- icon('arrow-up-right') %></a>
+          <a href="/#faq">Pertanyaan umum <%- icon('arrow-up-right') %></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Pantau performa penjualan, pembayaran, dan program terlaris.' }) %>
+
+  <div class="stat-grid">
+    <article class="stat-card stat-card-featured">
+      <span class="stat-icon stat-icon-amber"><%- icon('wallet') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Pendapatan bulan ini</span>
+        <strong class="stat-value-sm"><%= formatRupiah(revenueThisMonth.total) %></strong>
+        <span class="stat-meta">
+          <span class="trend-pill <%= trend >= 0 ? 'is-up' : 'is-down' %>"><%- icon(trend >= 0 ? 'trending-up' : 'trending-up') %><%= trend >= 0 ? '+' : '' %><%= formatNumber(trend) %>%</span>
+          dari bulan lalu
+        </span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-green"><%- icon('receipt') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Pesanan bulan ini</span>
+        <strong><%= ordersThisMonth.total %></strong>
+        <span class="stat-meta"><%= revenueThisMonth.count %> transaksi lunas</span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-rose"><%- icon('clock') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Menunggu pembayaran</span>
+        <strong><%= pending.count %></strong>
+        <span class="stat-meta">Nilai <%= formatRupiah(pending.total) %></span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-sky"><%- icon('users') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Siswa aktif</span>
+        <strong><%= activeStudents %></strong>
+        <span class="stat-meta">dari <%= students %> siswa terdaftar</span>
+      </div>
+    </article>
+  </div>
+
+  <div class="dash-grid-2 dash-grid-wide">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Tren pendapatan</h2>
+          <p>Enam bulan terakhir berdasarkan tanggal pembayaran.</p>
+        </div>
+        <span class="chip-static"><%- icon('chart') %> <%= formatRupiah(monthlyRevenue.reduce(function(sum, m) { return sum + m.total; }, 0)) %></span>
+      </div>
+
+      <div class="bar-chart" role="img" aria-label="Grafik pendapatan enam bulan terakhir">
+        <% monthlyRevenue.forEach(function(month) { %>
+          <div class="bar-col <%= month.isCurrent ? 'is-current' : '' %>">
+            <div class="bar-col-value"><%= formatRupiahShort(month.total) %></div>
+            <div class="bar-track">
+              <div class="bar-fill" style="height: <%= month.height %>%"></div>
+            </div>
+            <span class="bar-label"><%= month.label %></span>
+            <span class="bar-sub"><%= month.count %> trx</span>
+          </div>
+        <% }); %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Program terlaris</h2>
+          <p>Berdasarkan total pendapatan lunas.</p>
+        </div>
+      </div>
+
+      <% if (topPrograms.length === 0) { %>
+        <div class="empty-inline empty-inline-vertical">
+          <span class="empty-inline-icon"><%- icon('book') %></span>
+          <div><strong>Belum ada transaksi</strong><p>Data akan muncul setelah ada pembayaran.</p></div>
+        </div>
+      <% } else { %>
+        <ol class="rank-list">
+          <% topPrograms.forEach(function(item, index) { %>
+            <li class="rank-item">
+              <span class="rank-no"><%= index + 1 %></span>
+              <div class="rank-body">
+                <div class="rank-top">
+                  <strong><%= item.title %></strong>
+                  <span><%= formatRupiah(item.revenue) %></span>
+                </div>
+                <div class="progress"><span style="width: <%= item.pct %>%"></span></div>
+                <span class="rank-sub"><%= categoryBy(item.category).label %> · <%= item.transactions %> transaksi</span>
+              </div>
+            </li>
+          <% }); %>
+        </ol>
+      <% } %>
+    </section>
+  </div>
+
+  <section class="panel panel-flush">
+    <div class="panel-head panel-head-pad">
+      <div>
+        <h2>Pesanan terbaru</h2>
+        <p>Delapan transaksi terakhir yang masuk.</p>
+      </div>
+      <div class="panel-head-actions">
+        <a class="btn btn-outline btn-sm" href="/admin/pesanan">Kelola pesanan <%- icon('arrow-right') %></a>
+      </div>
+    </div>
+
+    <% if (recentOrders.length === 0) { %>
+      <div class="empty-state empty-state-sm">
+        <span class="empty-icon"><%- icon('receipt') %></span>
+        <h2>Belum ada pesanan masuk</h2>
+        <p>Pesanan dari siswa akan tampil di sini.</p>
+      </div>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Pesanan</th><th>Siswa</th><th>Program</th><th>Tanggal</th><th>Total</th><th>Status</th><th class="th-right">Aksi</th></tr>
+          </thead>
+          <tbody>
+            <% recentOrders.forEach(function(order) { %>
+              <tr>
+                <td>
+                  <a class="cell-strong nowrap" href="/admin/pesanan/<%= order.code %>"><%= order.code %></a>
+                  <span class="cell-sub"><%= order.invoice_no %></span>
+                </td>
+                <td><span class="cell-strong"><%= order.user_name %></span></td>
+                <td>
+                  <span class="cell-strong"><%= order.program_title %></span>
+                  <span class="cell-sub"><%= categoryBy(order.category).label %></span>
+                </td>
+                <td><%= formatDateID(order.created_at, 'short') %></td>
+                <td class="cell-strong nowrap"><%= formatRupiah(order.total) %></td>
+                <td><span class="badge badge-<%= statusMeta(order.status).tone %>"><%= statusMeta(order.status).label %></span></td>
+                <td class="td-right">
+                  <div class="row-actions">
+                    <a class="btn btn-outline btn-xs" href="/admin/pesanan/<%= order.code %>">Kelola</a>
+                    <a class="icon-link" href="/admin/pesanan/<%= order.code %>/invoice" target="_blank" rel="noopener" title="Buka invoice PDF"><%- icon('file-text') %></a>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+<%- include('../partials/dash-bottom') %>

@@ -1,0 +1,56 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Kelola profil tutor yang mengajar di Kelompok 4.' }) %>
+
+  <div class="toolbar-row">
+    <div class="toolbar-info">
+      <span class="chip-static"><%- icon('graduation') %> <%= tutors.length %> tutor</span>
+      <span class="chip-static"><%- icon('check-circle') %> <%= tutors.filter(function(t) { return t.active; }).length %> aktif</span>
+    </div>
+    <a class="btn btn-primary btn-sm" href="/admin/tutor/baru"><%- icon('plus') %> Tambah tutor</a>
+  </div>
+
+  <% if (tutors.length === 0) { %>
+    <section class="panel">
+      <div class="empty-state empty-state-sm">
+        <span class="empty-icon"><%- icon('graduation') %></span>
+        <h2>Belum ada tutor</h2>
+        <p>Tambahkan tutor agar program dapat dipublikasikan.</p>
+        <a class="btn btn-primary" href="/admin/tutor/baru">Tambah tutor</a>
+      </div>
+    </section>
+  <% } else { %>
+    <div class="tutor-admin-grid">
+      <% tutors.forEach(function(tutor) { %>
+        <article class="panel tutor-admin-card <%= tutor.active ? '' : 'is-inactive' %>">
+          <div class="tutor-admin-head">
+            <span class="avatar avatar-lg accent-<%= tutor.accent %>"><%= initials(tutor.name) %></span>
+            <div class="tutor-admin-id">
+              <strong><%= tutor.name %></strong>
+              <span><%= tutor.title %></span>
+            </div>
+            <span class="badge badge-<%= tutor.active ? 'green' : 'ink' %>"><%= tutor.active ? 'Aktif' : 'Nonaktif' %></span>
+          </div>
+
+          <p class="tutor-admin-expertise"><%= tutor.expertise %></p>
+          <p class="tutor-admin-bio"><%= tutor.bio %></p>
+
+          <div class="tutor-admin-stats">
+            <div><%- icon('book') %><span><strong><%= tutor.program_count %></strong> program</span></div>
+            <div><%- icon('users') %><span><strong><%= formatNumber(tutor.students) %></strong> siswa</span></div>
+            <div><%- icon('star') %><span><strong><%= Number(tutor.rating).toFixed(1) %></strong> rating</span></div>
+          </div>
+
+          <% if (tutor.badge) { %><span class="tutor-badge-pill"><%- icon('award') %> <%= tutor.badge %></span><% } %>
+
+          <div class="tutor-admin-actions">
+            <a class="btn btn-outline btn-sm" href="/admin/tutor/<%= tutor.id %>/edit"><%- icon('edit') %> Edit profil</a>
+            <form method="post" action="/admin/tutor/<%= tutor.id %>/toggle" data-confirm="<%= tutor.active ? 'Nonaktifkan' : 'Aktifkan' %> tutor ini?">
+              <button class="btn btn-ghost btn-sm" type="submit"><%- icon(tutor.active ? 'eye' : 'check-circle') %> <%= tutor.active ? 'Nonaktifkan' : 'Aktifkan' %></button>
+            </form>
+          </div>
+        </article>
+      <% }); %>
+    </div>
+  <% } %>
+
+<%- include('../partials/dash-bottom') %>

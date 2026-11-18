@@ -1,0 +1,20 @@
+{
+  "name": "cendekia",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kelompok 4 Private Tutor — platform pemesanan les privat & kursus online",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "reset-db": "node -e \"require('fs').rmSync('data/cendekia.db',{force:true}); console.log('Database direset')\""
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4"
+  }
+}

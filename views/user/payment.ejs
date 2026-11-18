@@ -1,0 +1,188 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Selesaikan pembayaran untuk mengaktifkan jadwal belajarmu.' }) %>
+<%
+  const methodInfo = paymentMethodBy(payment ? payment.method : null);
+  const expiry = payment ? new Date(new Date(payment.created_at).getTime() + 24 * 60 * 60 * 1000) : null;
+%>
+
+  <a class="back-link" href="/dashboard/pesanan/<%= order.code %>"><%- icon('arrow-left') %> Kembali ke detail pesanan</a>
+
+  <div class="payment-layout">
+    <div class="payment-main">
+      <% if (!payment) { %>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Pilih metode pembayaran</h2>
+              <p>Total tagihan <strong><%= formatRupiah(order.total) %></strong> untuk pesanan <strong><%= order.code %></strong>.</p>
+            </div>
+            <span class="badge badge-amber">Menunggu pembayaran</span>
+          </div>
+
+          <form method="post" action="/pembayaran/<%= order.code %>" class="method-form">
+            <div class="method-grid">
+              <% methods.forEach(function(method, index) { %>
+                <label class="method-option">
+                  <input type="radio" name="method" value="<%= method.id %>" <%= index === 0 ? 'checked' : '' %>>
+                  <span class="method-radio" aria-hidden="true"></span>
+                  <span class="method-icon"><%- icon(method.icon) %></span>
+                  <span class="method-body">
+                    <span class="method-group"><%= method.group %></span>
+                    <strong><%= method.name %></strong>
+                    <span><%= method.note %></span>
+                  </span>
+                </label>
+              <% }); %>
+            </div>
+
+            <div class="demo-note">
+              <%- icon('info') %>
+              <p><strong>Mode simulasi.</strong> Pembayaran diproses oleh gateway simulasi internal Kelompok 4. Tidak ada dana nyata yang ditarik.</p>
+            </div>
+
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Buat instruksi pembayaran <%- icon('arrow-right') %></button>
+          </form>
+        </section>
+      <% } else { %>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <span class="tiny-label">Instruksi pembayaran</span>
+              <h2><%= methodInfo.name %></h2>
+              <p>Kode pesanan <strong><%= order.code %></strong> · Ref <span class="mono"><%= payment.ref %></span></p>
+            </div>
+            <span class="badge badge-amber">Menunggu pembayaran</span>
+          </div>
+
+          <div class="pay-amount">
+            <span>Total yang harus dibayar</span>
+            <strong><%= formatRupiah(payment.amount) %></strong>
+            <span class="pay-deadline">
+              <%- icon('clock') %> Selesaikan dalam
+              <span data-countdown="<%= expiry.toISOString() %>"><%= formatDateTimeID(expiry) %></span>
+            </span>
+          </div>
+
+          <% if (payment.method === 'qris') { %>
+            <div class="qr-panel">
+              <div class="qr-code"><%- qrSvg %></div>
+              <div class="qr-copy">
+                <strong>Scan QRIS</strong>
+                <p>Buka aplikasi e-wallet atau m-banking apa pun yang mendukung QRIS, lalu pindai kode di samping.</p>
+                <span class="pill tint-sage"><%- icon('shield') %> QRIS resmi</span>
+              </div>
+            </div>
+          <% } else if (payment.va_number) { %>
+            <div class="va-panel">
+              <span class="tiny-label">Nomor Virtual Account</span>
+              <div class="va-number">
+                <strong><%= payment.va_number %></strong>
+                <button class="btn btn-outline btn-sm" type="button" data-copy="<%= payment.va_number %>"><%- icon('copy') %> Salin</button>
+              </div>
+              <span class="va-bank"><%= methodInfo.name %></span>
+            </div>
+          <% } else { %>
+            <div class="va-panel">
+              <span class="tiny-label">Nomor pembayaran GoPay</span>
+              <div class="va-number">
+                <strong><%= app.phone %></strong>
+                <button class="btn btn-outline btn-sm" type="button" data-copy="<%= app.phone.replace(/\s/g, '') %>"><%- icon('copy') %> Salin</button>
+              </div>
+              <span class="va-bank">Atas nama Kelompok 4 Private Tutor</span>
+            </div>
+          <% } %>
+
+          <div class="pay-instructions">
+            <h3>Langkah pembayaran</h3>
+            <% if (payment.method === 'qris') { %>
+              <ol>
+                <li>Buka aplikasi e-wallet atau m-banking yang mendukung QRIS.</li>
+                <li>Pilih menu Scan QR, lalu pindai kode QRIS di atas.</li>
+                <li>Periksa nominal <strong><%= formatRupiah(payment.amount) %></strong> dan nama merchant Kelompok 4.</li>
+                <li>Konfirmasi pembayaran dan simpan bukti transaksi.</li>
+              </ol>
+            <% } else if (payment.method === 'gopay') { %>
+              <ol>
+                <li>Buka aplikasi Gojek dan pilih menu GoPay.</li>
+                <li>Kirim pembayaran ke nomor tujuan di atas.</li>
+                <li>Masukkan nominal persis <strong><%= formatRupiah(payment.amount) %></strong>.</li>
+                <li>Periksa detail penerima Kelompok 4 Private Tutor, lalu konfirmasi.</li>
+              </ol>
+            <% } else { %>
+              <ol>
+                <li>Buka m-banking atau ATM <%= methodInfo.name.split(' ')[0] %>.</li>
+                <li>Pilih menu Transfer → Virtual Account.</li>
+                <li>Masukkan nomor Virtual Account di atas.</li>
+                <li>Masukkan nominal persis <strong><%= formatRupiah(payment.amount) %></strong>.</li>
+                <li>Periksa detail transaksi, lalu konfirmasi pembayaran.</li>
+              </ol>
+            <% } %>
+          </div>
+
+          <div class="demo-panel">
+            <div class="demo-panel-head">
+              <span class="demo-icon"><%- icon('shield') %></span>
+              <div>
+                <strong>Mode simulasi pembayaran</strong>
+                <p>Lingkungan demo tidak terhubung ke dana nyata. Gunakan tombol di bawah untuk mensimulasikan status pembayaran, seperti menerima webhook dari gateway.</p>
+              </div>
+            </div>
+            <div class="demo-actions">
+              <form method="post" action="/pembayaran/<%= order.code %>/simulasi">
+                <input type="hidden" name="action" value="success">
+                <button class="btn btn-primary" type="submit"><%- icon('check-circle') %> Simulasikan berhasil</button>
+              </form>
+              <form method="post" action="/pembayaran/<%= order.code %>/simulasi">
+                <input type="hidden" name="action" value="failed">
+                <button class="btn btn-outline-danger" type="submit"><%- icon('x-circle') %> Simulasikan gagal</button>
+              </form>
+            </div>
+          </div>
+
+          <details class="change-method">
+            <summary>Ingin memakai metode lain? <%- icon('chevron-down') %></summary>
+            <form method="post" action="/pembayaran/<%= order.code %>" class="change-method-form">
+              <select name="method">
+                <% methods.forEach(function(method) { %>
+                  <option value="<%= method.id %>" <%= method.id === payment.method ? 'selected' : '' %>><%= method.name %></option>
+                <% }); %>
+              </select>
+              <button class="btn btn-outline btn-sm" type="submit">Ganti metode</button>
+            </form>
+          </details>
+        </section>
+      <% } %>
+    </div>
+
+    <aside class="payment-aside">
+      <section class="panel">
+        <div class="panel-head">
+          <div><h2>Ringkasan pesanan</h2></div>
+        </div>
+        <div class="order-mini">
+          <span class="order-mini-icon tint-<%= categoryBy(order.category).tint %>"><%- icon(categoryBy(order.category).icon) %></span>
+          <div>
+            <strong><%= order.program_title %></strong>
+            <span><%= order.sessions %> sesi · <%= order.tutor_name %></span>
+          </div>
+        </div>
+        <div class="summary-rows">
+          <div><span>Subtotal</span><strong><%= formatRupiah(order.subtotal) %></strong></div>
+          <% if (order.discount > 0) { %>
+            <div class="text-green"><span>Diskon paket</span><strong>- <%= formatRupiah(order.discount) %></strong></div>
+          <% } %>
+          <div><span>Biaya layanan</span><strong><%= formatRupiah(order.fee) %></strong></div>
+          <div class="summary-total"><span>Total</span><strong><%= formatRupiah(order.total) %></strong></div>
+        </div>
+        <div class="payment-meta">
+          <div><span>Mulai belajar</span><strong><%= formatDateID(order.start_date, 'short') %></strong></div>
+          <div><span>Jam</span><strong><%= order.time_slot %> WIB</strong></div>
+          <div><span>Kode pesanan</span><strong class="mono"><%= order.code %></strong></div>
+        </div>
+        <a class="btn btn-outline btn-block btn-sm" href="/dashboard/pesanan/<%= order.code %>/invoice" target="_blank" rel="noopener"><%- icon('file-text') %> Lihat tagihan PDF</a>
+        <p class="panel-note">Pembayaran terverifikasi otomatis membuat jadwal sesi dan invoice lunas.</p>
+      </section>
+    </aside>
+  </div>
+
+<%- include('../partials/dash-bottom') %>

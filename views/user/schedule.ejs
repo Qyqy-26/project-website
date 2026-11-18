@@ -1,0 +1,91 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Jadwal sesi belajarmu, terdekat hingga yang sudah selesai.' }) %>
+
+  <div class="schedule-summary">
+    <div class="schedule-summary-item">
+      <span class="stat-icon stat-icon-green"><%- icon('calendar') %></span>
+      <div><strong><%= upcoming.length %></strong><span>Sesi mendatang</span></div>
+    </div>
+    <div class="schedule-summary-item">
+      <span class="stat-icon stat-icon-sky"><%- icon('check-circle') %></span>
+      <div><strong><%= past.length %></strong><span>Sesi selesai</span></div>
+    </div>
+    <p class="schedule-note"><%- icon('info') %> Tautan kelas dikirim otomatis melalui email dan WhatsApp H-1 sebelum sesi.</p>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Sesi mendatang</h2>
+        <p>Urut dari jadwal terdekat.</p>
+      </div>
+      <span class="badge badge-green"><%= upcoming.length %> terjadwal</span>
+    </div>
+
+    <% if (upcoming.length === 0) { %>
+      <div class="empty-inline">
+        <span class="empty-inline-icon"><%- icon('calendar') %></span>
+        <div><strong>Tidak ada sesi mendatang</strong><p>Pesan program baru atau tunggu jadwal berikutnya dibuat oleh admin.</p></div>
+        <a class="btn btn-primary btn-sm" href="/program">Pesan program</a>
+      </div>
+    <% } else { %>
+      <div class="schedule-grid">
+        <% upcoming.forEach(function(session) { const parts = formatDateID(session.date, 'short').split(' '); %>
+          <article class="schedule-card">
+            <div class="schedule-card-top">
+              <div class="date-block date-block-lg">
+                <strong><%= parts[0] %></strong>
+                <span><%= parts[1] %></span>
+              </div>
+              <span class="pill tint-<%= categoryBy(session.category).tint %>"><%= categoryBy(session.category).label %></span>
+            </div>
+            <span class="tiny-label"><%= sessionLabel(session.date) %> · Sesi ke-<%= session.seq %></span>
+            <h3><%= session.program_title %></h3>
+            <div class="schedule-meta">
+              <span><%- icon('clock') %> <%= session.time_slot %> WIB</span>
+              <span><%- icon(session.mode === 'hybrid' ? 'map-pin' : 'video') %> <%= modeLabel(session.mode) %></span>
+            </div>
+            <div class="schedule-foot">
+              <span class="tutor-inline"><span class="avatar avatar-xs accent-sage"><%= initials(session.tutor_name || 'Tutor') %></span><%= session.tutor_name %></span>
+              <span class="link-note"><%- icon('video') %> Tautan H-1</span>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Riwayat sesi</h2>
+        <p>Sesi yang sudah kamu lalui.</p>
+      </div>
+    </div>
+
+    <% if (past.length === 0) { %>
+      <div class="empty-inline">
+        <span class="empty-inline-icon"><%- icon('clock') %></span>
+        <div><strong>Belum ada riwayat sesi</strong><p>Riwayat akan muncul setelah kamu menyelesaikan sesi pertama.</p></div>
+      </div>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Tanggal</th><th>Program</th><th>Tutor</th><th>Jam</th><th>Status</th></tr></thead>
+          <tbody>
+            <% past.forEach(function(session) { %>
+              <tr>
+                <td class="cell-strong"><%= formatDateID(session.date, 'short') %></td>
+                <td><%= session.program_title %><span class="cell-sub"><%= session.code %></span></td>
+                <td><%= session.tutor_name %></td>
+                <td><%= session.time_slot %></td>
+                <td><span class="badge badge-ink">Selesai</span></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+<%- include('../partials/dash-bottom') %>

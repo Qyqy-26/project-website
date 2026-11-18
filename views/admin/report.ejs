@@ -1,0 +1,237 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Analisis pendapatan dengan filter fleksibel, ekspor PDF dan Excel.' }) %>
+
+  <section class="report-head-card">
+    <div class="report-head-copy">
+      <p class="eyebrow eyebrow-light">Laporan keuangan</p>
+      <h2 class="display-3"><%= data.labels.period %></h2>
+      <p><%= data.labels.status %> · <%= data.labels.category %> · <%= data.labels.method %></p>
+    </div>
+    <div class="report-head-actions">
+      <a class="btn btn-accent btn-sm" href="/admin/laporan/pdf?<%= qs %>" target="_blank" rel="noopener"><%- icon('file-text') %> Cetak PDF</a>
+      <a class="btn btn-ghost-light btn-sm" href="/admin/laporan/excel?<%= qs %>"><%- icon('download') %> Unduh Excel</a>
+    </div>
+  </section>
+
+  <section class="panel filter-panel">
+    <form method="get" action="/admin/laporan" class="report-filter-form">
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label for="from">Dari tanggal</label>
+          <input id="from" type="date" name="from" value="<%= filters.from %>" max="<%= filters.to %>">
+        </div>
+        <div class="filter-field">
+          <label for="to">Sampai tanggal</label>
+          <input id="to" type="date" name="to" value="<%= filters.to %>" min="<%= filters.from %>">
+        </div>
+        <div class="filter-field">
+          <label for="status">Status transaksi</label>
+          <select id="status" name="status">
+            <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>Lunas & Selesai</option>
+            <option value="paid" <%= filters.status === 'paid' ? 'selected' : '' %>>Lunas saja</option>
+            <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Selesai saja</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="category">Kategori</label>
+          <select id="category" name="category">
+            <option value="all" <%= filters.category === 'all' ? 'selected' : '' %>>Semua kategori</option>
+            <% categories.forEach(function(item) { %>
+              <option value="<%= item.slug %>" <%= filters.category === item.slug ? 'selected' : '' %>><%= item.label %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="method">Metode bayar</label>
+          <select id="method" name="method">
+            <option value="all" <%= filters.method === 'all' ? 'selected' : '' %>>Semua metode</option>
+            <% methodOptions.forEach(function(item) { %>
+              <option value="<%= item.id %>" <%= filters.method === item.id ? 'selected' : '' %>><%= item.label %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-foot">
+        <div class="quick-ranges" aria-label="Rentang cepat">
+          <% quickRanges.forEach(function(range) { %>
+            <a class="quick-range <%= range.active ? 'is-active' : '' %>" href="/admin/laporan?<%= new URLSearchParams({ from: range.from, to: range.to, status: filters.status, category: filters.category, method: filters.method }).toString() %>"><%= range.label %></a>
+          <% }); %>
+        </div>
+        <div class="filter-actions">
+          <button class="btn btn-primary btn-sm" type="submit"><%- icon('filter') %> Terapkan filter</button>
+          <a class="btn btn-ghost btn-sm" href="/admin/laporan">Reset</a>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <div class="stat-grid stat-grid-report">
+    <article class="stat-card stat-card-featured">
+      <span class="stat-icon stat-icon-amber"><%- icon('wallet') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Total pendapatan</span>
+        <strong class="stat-value-sm"><%= formatRupiah(data.summary.total) %></strong>
+        <span class="stat-meta"><%= data.summary.count %> transaksi tercatat</span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-green"><%- icon('chart') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Rata-rata transaksi</span>
+        <strong class="stat-value-sm"><%= formatRupiah(data.summary.average) %></strong>
+        <span class="stat-meta">Nilai pesanan rata-rata</span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-sky"><%- icon('users') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Siswa bertransaksi</span>
+        <strong><%= data.summary.uniqueStudents %></strong>
+        <span class="stat-meta">Siswa unik pada periode ini</span>
+      </div>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-icon-rose"><%- icon('clock') %></span>
+      <div class="stat-body">
+        <span class="stat-label">Potensi tertunda</span>
+        <strong class="stat-value-sm"><%= formatRupiah(data.summary.pendingTotal) %></strong>
+        <span class="stat-meta"><%= data.summary.pendingCount %> pesanan belum dibayar</span>
+      </div>
+    </article>
+  </div>
+
+  <div class="dash-grid-2">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Pendapatan per kategori</h2>
+          <p>Distribusi pendapatan pada periode terpilih.</p>
+        </div>
+      </div>
+      <% if (data.byCategory.length === 0) { %>
+        <div class="empty-inline empty-inline-vertical">
+          <span class="empty-inline-icon"><%- icon('pie-chart') %></span>
+          <div><strong>Belum ada data</strong><p>Ubah rentang tanggal atau filter untuk melihat data.</p></div>
+        </div>
+      <% } else { %>
+        <div class="breakdown-list">
+          <% data.byCategory.forEach(function(item) { const pct = data.summary.total ? Math.round((item.total / data.summary.total) * 100) : 0; %>
+            <div class="breakdown-item">
+              <div class="breakdown-top">
+                <span class="breakdown-name">
+                  <span class="table-icon tint-<%= item.tint %>"><%- icon(item.icon) %></span>
+                  <%= item.label %>
+                </span>
+                <strong><%= formatRupiah(item.total) %></strong>
+              </div>
+              <div class="progress"><span class="progress-<%= item.tint %>" style="width: <%= pct %>%"></span></div>
+              <span class="breakdown-sub"><%= item.count %> transaksi · <%= pct %>% dari total</span>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Metode pembayaran</h2>
+          <p>Kontribusi setiap kanal pembayaran.</p>
+        </div>
+      </div>
+      <% if (data.byMethod.length === 0) { %>
+        <div class="empty-inline empty-inline-vertical">
+          <span class="empty-inline-icon"><%- icon('credit-card') %></span>
+          <div><strong>Belum ada pembayaran</strong><p>Data metode muncul setelah transaksi lunas.</p></div>
+        </div>
+      <% } else { %>
+        <div class="breakdown-list">
+          <% data.byMethod.forEach(function(item) { const pct = data.summary.total ? Math.round((item.total / data.summary.total) * 100) : 0; %>
+            <div class="breakdown-item">
+              <div class="breakdown-top">
+                <span class="breakdown-name">
+                  <span class="table-icon tint-sage"><%- icon(item.id === 'qris' ? 'qr' : item.id === 'gopay' ? 'wallet' : item.id === 'manual' ? 'bank' : 'credit-card') %></span>
+                  <%= item.name %>
+                </span>
+                <strong><%= formatRupiah(item.total) %></strong>
+              </div>
+              <div class="progress"><span style="width: <%= pct %>%"></span></div>
+              <span class="breakdown-sub"><%= item.count %> transaksi · <%= pct %>% dari total</span>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </section>
+  </div>
+
+  <section class="panel panel-flush">
+    <div class="panel-head panel-head-pad">
+      <div>
+        <h2>Rincian transaksi</h2>
+        <p><%= data.rows.length %> transaksi lunas pada periode ini.</p>
+      </div>
+      <div class="panel-head-actions">
+        <a class="btn btn-outline btn-sm" href="/admin/laporan/pdf?<%= qs %>" target="_blank" rel="noopener"><%- icon('printer') %> PDF</a>
+        <a class="btn btn-outline btn-sm" href="/admin/laporan/excel?<%= qs %>"><%- icon('download') %> Excel</a>
+      </div>
+    </div>
+
+    <% if (data.rows.length === 0) { %>
+      <div class="empty-state empty-state-sm">
+        <span class="empty-icon"><%- icon('file-text') %></span>
+        <h2>Tidak ada transaksi pada periode ini</h2>
+        <p>Coba perluas rentang tanggal atau ubah filter status dan kategori.</p>
+        <a class="btn btn-outline" href="/admin/laporan">Reset filter</a>
+      </div>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table data-table-report">
+          <thead>
+            <tr>
+              <th>Tanggal bayar</th>
+              <th>Invoice</th>
+              <th>Siswa</th>
+              <th>Program</th>
+              <th>Kategori</th>
+              <th>Metode</th>
+              <th>Status</th>
+              <th class="th-right">Nominal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% data.rows.forEach(function(row) { %>
+              <tr>
+                <td>
+                  <span class="cell-strong"><%= formatDateID(row.paid_at, 'short') %></span>
+                  <span class="cell-sub"><%= formatDateTimeID(row.paid_at).split(', ')[1] || '' %> WIB</span>
+                </td>
+                <td>
+                  <a class="cell-strong mono" href="/admin/pesanan/<%= row.code %>"><%= row.invoice_no %></a>
+                  <span class="cell-sub"><%= row.code %></span>
+                </td>
+                <td>
+                  <span class="cell-strong"><%= row.user_name %></span>
+                  <span class="cell-sub"><%= row.user_email %></span>
+                </td>
+                <td><span class="cell-strong"><%= row.program_title %></span><span class="cell-sub"><%= row.sessions %> sesi</span></td>
+                <td><span class="pill tint-<%= categoryBy(row.category).tint %>"><%= categoryBy(row.category).short || categoryBy(row.category).label %></span></td>
+                <td><span class="method-tag"><%= paymentGroupLabel[row.method] || row.method %></span></td>
+                <td><span class="badge badge-<%= statusMeta(row.status).tone %>"><%= statusMeta(row.status).label %></span></td>
+                <td class="td-right cell-strong"><%= formatRupiah(row.total) %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="7">Total <%= data.rows.length %> transaksi</td>
+              <td class="td-right"><%= formatRupiah(data.summary.total) %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="table-footnote">Hanya transaksi berstatus lunas dan selesai yang dihitung sebagai pendapatan. Pesanan tertunda ditampilkan terpisah pada kartu potensi tertunda.</p>
+    <% } %>
+  </section>
+
+<%- include('../partials/dash-bottom') %>

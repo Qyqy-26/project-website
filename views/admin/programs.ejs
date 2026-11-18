@@ -1,0 +1,63 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: 'Atur katalog program, harga, dan ketersediaan kelas.' }) %>
+
+  <div class="toolbar-row">
+    <div class="toolbar-info">
+      <span class="chip-static"><%- icon('book') %> <%= programs.length %> program</span>
+      <span class="chip-static"><%- icon('check-circle') %> <%= programs.filter(function(p) { return p.active; }).length %> aktif</span>
+    </div>
+    <a class="btn btn-primary btn-sm" href="/admin/program/baru"><%- icon('plus') %> Tambah program</a>
+  </div>
+
+  <section class="panel panel-flush">
+    <% if (programs.length === 0) { %>
+      <div class="empty-state empty-state-sm">
+        <span class="empty-icon"><%- icon('book') %></span>
+        <h2>Katalog masih kosong</h2>
+        <p>Tambahkan program pertama agar siswa dapat mulai memesan.</p>
+        <a class="btn btn-primary" href="/admin/program/baru">Tambah program</a>
+      </div>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table data-table-programs">
+          <thead>
+            <tr><th>Program</th><th>Kategori</th><th>Tutor</th><th>Harga / sesi</th><th>Durasi</th><th>Pesanan</th><th>Status</th><th class="th-right">Aksi</th></tr>
+          </thead>
+          <tbody>
+            <% programs.forEach(function(program) { const cat = categoryBy(program.category); %>
+              <tr>
+                <td>
+                  <div class="table-title-cell">
+                    <span class="table-icon tint-<%= cat.tint %>"><%- icon(cat.icon) %></span>
+                    <div>
+                      <a class="cell-strong" href="/program/<%= program.slug %>" target="_blank" rel="noopener"><%= program.title %></a>
+                      <span class="cell-sub"><%= program.level %> · <%= modeLabel(program.mode) %><%= program.featured ? ' · Unggulan' : '' %></span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="pill tint-<%= cat.tint %>"><%= cat.label %></span></td>
+                <td><%= program.tutor_name || '—' %></td>
+                <td class="cell-strong"><%= formatRupiah(program.price) %></td>
+                <td class="nowrap"><%= program.duration %> menit</td>
+                <td><%= program.order_count %></td>
+                <td>
+                  <span class="badge badge-<%= program.active ? 'green' : 'ink' %>"><%= program.active ? 'Aktif' : 'Nonaktif' %></span>
+                </td>
+                <td class="td-right">
+                  <div class="row-actions">
+                    <a class="btn btn-outline btn-xs" href="/admin/program/<%= program.id %>/edit"><%- icon('edit') %> Edit</a>
+                    <form method="post" action="/admin/program/<%= program.id %>/toggle" data-confirm="<%= program.active ? 'Nonaktifkan' : 'Aktifkan' %> program ini?">
+                      <button class="icon-link <%= program.active ? 'is-danger' : '' %>" type="submit" title="<%= program.active ? 'Nonaktifkan' : 'Aktifkan' %>"><%- icon(program.active ? 'eye' : 'check-circle') %></button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-footnote">Program nonaktif tetap tersimpan pada riwayat pesanan, tetapi tidak muncul di katalog publik.</p>
+    <% } %>
+  </section>
+
+<%- include('../partials/dash-bottom') %>

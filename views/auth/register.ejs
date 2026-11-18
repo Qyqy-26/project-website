@@ -1,0 +1,72 @@
+<%- include('../partials/head') %>
+<div class="auth-shell auth-shell-reverse">
+  <section class="auth-form-side">
+    <a class="brand" href="/" aria-label="Kelompok 4 — beranda">
+      <span class="brand-mark">4</span>
+      <span class="brand-word">Kelompok 4</span>
+    </a>
+
+    <div class="auth-form-wrap">
+      <p class="eyebrow">Mulai perjalananmu</p>
+      <h1 class="display-3">Buat akun dan mulai <em>belajar</em>.</h1>
+      <p class="auth-lede">Gratis, tanpa komitmen. Pilih program dan jadwal sesuai ritme belajarmu.</p>
+
+      <form method="post" action="/daftar" class="auth-form">
+        <input type="hidden" name="next" value="<%= next %>">
+        <label class="field">
+          <span>Nama lengkap</span>
+          <span class="input-icon">
+            <%- icon('user') %>
+            <input type="text" name="name" value="<%= values.name %>" required minlength="2" autofocus autocomplete="name" placeholder="Nama kamu">
+          </span>
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <span class="input-icon">
+            <%- icon('mail') %>
+            <input type="email" name="email" value="<%= values.email %>" required autocomplete="email" placeholder="nama@email.com">
+          </span>
+        </label>
+        <label class="field">
+          <span>Nomor WhatsApp <small>(opsional)</small></span>
+          <span class="input-icon">
+            <%- icon('phone') %>
+            <input type="tel" name="phone" value="<%= values.phone %>" autocomplete="tel" placeholder="0812 3456 7890">
+          </span>
+        </label>
+        <label class="field">
+          <span>Kata sandi</span>
+          <span class="input-icon">
+            <%- icon('lock') %>
+            <input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter" data-password-input>
+            <button class="pw-toggle" type="button" data-password-toggle aria-label="Tampilkan kata sandi"><%- icon('eye') %></button>
+          </span>
+        </label>
+        <button class="btn btn-primary btn-block btn-lg" type="submit">Daftar gratis <%- icon('arrow-right') %></button>
+        <p class="form-note">Dengan mendaftar, kamu menyetujui ketentuan layanan dan kebijakan privasi Kelompok 4.</p>
+      </form>
+
+      <p class="auth-switch">Sudah punya akun? <a href="/masuk">Masuk di sini <%- icon('arrow-right') %></a></p>
+    </div>
+
+    <p class="auth-legal">© <%= currentYear %> Kelompok 4 Private Tutor</p>
+  </section>
+
+  <aside class="auth-visual auth-visual-alt">
+    <img src="/images/online-class.webp" alt="Kelas online Kelompok 4" width="1400" height="933">
+    <div class="auth-visual-content">
+      <span class="auth-quote-mark">✦</span>
+      <blockquote>Setiap siswa punya cara belajar terbaiknya sendiri. Tugas kami menemukannya.</blockquote>
+      <p class="auth-quote-by">— Tim Kelompok 4</p>
+      <div class="auth-visual-badges">
+        <span><strong>Gratis</strong> tanpa biaya pendaftaran</span>
+        <span><strong>1-on-1</strong> kelas privat</span>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<%- include('../partials/flash') %>
+<script src="/js/main.js"></script>
+</body>
+</html>

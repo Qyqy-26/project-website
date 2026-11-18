@@ -1,0 +1,25 @@
+<% const cat = categoryBy(program.category); %>
+<article class="program-card">
+  <a class="program-media tint-<%= cat.tint %>" href="/program/<%= program.slug %>" aria-label="<%= program.title %>">
+    <span class="program-chip"><%= cat.label %></span>
+    <span class="program-watermark"><%- icon(cat.icon) %></span>
+    <span class="program-mode"><%- icon(program.mode === 'hybrid' ? 'map-pin' : 'video') %> <%= modeLabel(program.mode) %></span>
+  </a>
+  <div class="program-body">
+    <div class="program-topline">
+      <span class="program-level"><%= program.level %></span>
+      <span class="rating"><%- icon('star') %> <%= Number(program.rating).toFixed(1) %> <span class="rating-count">(<%= formatNumber(program.students) %>)</span></span>
+    </div>
+    <h3><a href="/program/<%= program.slug %>"><%= program.title %></a></h3>
+    <p class="program-tutor">
+      <span class="avatar avatar-xs accent-<%= program.tutor_accent || 'sage' %>"><%= initials(program.tutor_name || 'Tutor') %></span>
+      <%= program.tutor_name || 'Tutor Kelompok 4' %>
+    </p>
+    <div class="program-foot">
+      <div class="price-block">
+        <span class="price"><%= formatRupiah(program.price) %></span><span class="per">/sesi</span>
+      </div>
+      <span class="circle-arrow"><%- icon('arrow-up-right') %></span>
+    </div>
+  </div>
+</article>

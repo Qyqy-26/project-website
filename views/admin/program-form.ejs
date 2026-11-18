@@ -1,0 +1,116 @@
+<%- include('../partials/head') %>
+<%- include('../partials/dash-top', { subtitle: program ? 'Perbarui informasi program yang sudah ada.' : 'Lengkapi informasi program baru untuk katalog publik.' }) %>
+
+  <a class="back-link" href="/admin/program"><%- icon('arrow-left') %> Kembali ke daftar program</a>
+
+  <form class="admin-form-grid" method="post" action="<%= formAction %>">
+    <div class="admin-form-main">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Informasi program</h2>
+            <p>Judul, deskripsi, dan keunggulan yang tampil di katalog.</p>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="title">Judul program <span class="req">*</span></label>
+          <input id="title" name="title" type="text" value="<%= program ? program.title : '' %>" placeholder="Contoh: Matematika Intensif SMA" required minlength="4">
+          <span class="field-hint">Minimal 4 karakter. Slug URL dibuat otomatis.</span>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <label for="category">Kategori <span class="req">*</span></label>
+            <select id="category" name="category" required>
+              <% categories.forEach(function(item) { %>
+                <option value="<%= item.slug %>" <%= program && program.category === item.slug ? 'selected' : '' %>><%= item.label %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="level">Jenjang / level</label>
+            <input id="level" name="level" type="text" value="<%= program ? program.level : 'Umum' %>" placeholder="SD, SMP, SMA, Pemula, Umum">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="description">Deskripsi <span class="req">*</span></label>
+          <textarea id="description" name="description" rows="5" placeholder="Jelaskan tujuan, metode, dan target pembelajaran program ini." required minlength="20"><%= program ? program.description : '' %></textarea>
+          <span class="field-hint">Minimal 20 karakter. Tampil di halaman detail program.</span>
+        </div>
+
+        <div class="form-field">
+          <label for="highlights">Poin keunggulan</label>
+          <textarea id="highlights" name="highlights" rows="4" placeholder="Satu poin per baris&#10;Kelas interaktif maksimal 5 siswa&#10;Modul latihan dan bank soal&#10;Laporan progres mingguan"><%= program ? parseHighlights(program.highlights).join('\n') : '' %></textarea>
+          <span class="field-hint">Satu poin per baris, maksimal 6 poin.</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Harga & jadwal</h2>
+            <p>Nominal per sesi dan durasi standar kelas.</p>
+          </div>
+        </div>
+        <div class="form-grid-3">
+          <div class="form-field">
+            <label for="price">Harga per sesi <span class="req">*</span></label>
+            <div class="input-prefix">
+              <span>Rp</span>
+              <input id="price" name="price" type="number" min="10000" step="1000" value="<%= program ? program.price : 110000 %>" required>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="duration">Durasi (menit)</label>
+            <input id="duration" name="duration" type="number" min="30" step="15" value="<%= program ? program.duration : 90 %>">
+          </div>
+          <div class="form-field">
+            <label for="mode">Mode kelas</label>
+            <select id="mode" name="mode">
+              <option value="online" <%= program && program.mode === 'online' ? 'selected' : '' %>>Online</option>
+              <option value="hybrid" <%= program && program.mode === 'hybrid' ? 'selected' : '' %>>Hybrid</option>
+            </select>
+          </div>
+        </div>
+        <p class="form-note"><%- icon('info') %> Paket 8 sesi otomatis mendapat diskon 8% dan paket 12 sesi diskon 15% saat pemesanan.</p>
+      </section>
+    </div>
+
+    <aside class="admin-form-side">
+      <section class="panel">
+        <h2>Publikasi</h2>
+        <div class="form-field">
+          <label for="tutor_id">Tutor pengampu <span class="req">*</span></label>
+          <select id="tutor_id" name="tutor_id" required>
+            <option value="">Pilih tutor</option>
+            <% tutors.forEach(function(tutor) { %>
+              <option value="<%= tutor.id %>" <%= program && program.tutor_id === tutor.id ? 'selected' : '' %>><%= tutor.name %><%= tutor.active ? '' : ' (nonaktif)' %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="active">Status</label>
+          <select id="active" name="active">
+            <option value="1" <%= !program || program.active ? 'selected' : '' %>>Aktif — tampil di katalog</option>
+            <option value="0" <%= program && !program.active ? 'selected' : '' %>>Nonaktif — disembunyikan</option>
+          </select>
+        </div>
+        <label class="check-row">
+          <input type="checkbox" name="featured" value="1" <%= program && program.featured ? 'checked' : '' %>>
+          <span><strong>Tampilkan sebagai unggulan</strong><small>Muncul di bagian rekomendasi beranda.</small></span>
+        </label>
+      </section>
+
+      <section class="panel admin-form-actions">
+        <button class="btn btn-primary btn-block" type="submit"><%- icon('check') %> <%= program ? 'Simpan perubahan' : 'Tambah program' %></button>
+        <a class="btn btn-ghost btn-block" href="/admin/program">Batal</a>
+        <% if (program) { %>
+          <a class="text-link text-center" href="/program/<%= program.slug %>" target="_blank" rel="noopener">Lihat di katalog <%- icon('arrow-up-right') %></a>
+        <% } %>
+      </section>
+    </aside>
+  </form>
+
+<%- include('../partials/dash-bottom') %>
